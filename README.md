@@ -11,7 +11,7 @@ Para executar este projeto, é necessário ter o Docker instalado em sua máquin
 
 2. Copie o arquivo de exemplo para a pasta do Docker:
    ```
-   cp ../../data/sample/* .
+   cp ../../data/sample/env.template .
    ```
 
 3. Execute o Docker Compose para iniciar os serviços:
