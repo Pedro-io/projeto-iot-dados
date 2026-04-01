@@ -1,0 +1,40 @@
+[tool.poetry]
+name = "projeto-iot-dados"
+version = "0.1.0"
+description = "Pipeline de dados IoT com ingestão, processamento e streaming"
+authors = ["Pedro Henrique Rodrigues da Silva"]
+readme = "README.md"
+packages = [{ include = "src" }]
+
+[tool.poetry.dependencies]
+python = "3.14.3"
+
+[tool.poetry.group.dev.dependencies]
+
+# Lint e formatação
+ruff = "^0.4.0"
+
+# Testes
+pytest = "^8.0.0"
+
+# Opcional (debug e qualidade)
+ipython = "^8.0.0"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
+
+# ----------------------------
+# Configuração do Ruff
+# ----------------------------
+[tool.ruff]
+line-length = 88
+target-version = "py310"
+
+[tool.ruff.lint]
+select = ["E", "F", "I"]  # erros, warnings, imports
+ignore = []
+
+[tool.ruff.format]
+quote-style = "double"
+indent-style = "space"

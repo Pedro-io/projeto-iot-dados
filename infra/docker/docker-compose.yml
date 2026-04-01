@@ -52,7 +52,7 @@ services:
       timeout: 5s
       retries: 5
   adminer:
-    image: adminer:latest
+    image: adminer:5.4.2
     container_name: adminer
     restart: unless-stopped
     ports:
@@ -64,7 +64,7 @@ services:
       - data-net
       - ui-net
   minio:
-    image: minio/minio:latest
+    image: minio/minio:RELEASE.2025-09-07T16-13-09Z
     container_name: minio
     restart: unless-stopped
     command: server /data --console-address ":9001"
