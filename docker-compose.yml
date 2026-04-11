@@ -24,7 +24,7 @@ services:
       ZOOKEEPER_CLIENT_PORT: 2181
       ZOOKEEPER_TICK_TIME: 2000
     healthcheck:
-      test: ["CMD", "bash", "-c", "echo ruok | nc localhost 2181 | grep imok"]
+      test: ["CMD", "bash", "-c", "echo ruok | timeout 2 bash -c 'cat < /dev/null > /dev/tcp/localhost/2181'"]
       interval: 10s
       timeout: 5s
       retries: 5
@@ -49,9 +49,6 @@ services:
       KAFKA_BROKER_ID: 1
       KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
 
-      # LISTENERS:
-      #   INTERNAL — comunicação entre containers (usa nome do container)
-      #   EXTERNAL — conexões do host (localhost:9092)
       KAFKA_LISTENERS: INTERNAL://0.0.0.0:29092,EXTERNAL://0.0.0.0:9092
       KAFKA_ADVERTISED_LISTENERS: INTERNAL://kafka:29092,EXTERNAL://localhost:9092
       KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: INTERNAL:PLAINTEXT,EXTERNAL:PLAINTEXT
@@ -75,7 +72,7 @@ services:
       test: ["CMD", "kafka-topics.sh", "--bootstrap-server", "localhost:9092", "--list"]
       interval: 15s
       timeout: 10s
-      retries: 10
+      retries: 15
       start_period: 30s
     volumes:
       - kafka_data:/var/lib/kafka/data
@@ -89,8 +86,7 @@ services:
     container_name: kafka-ui
     restart: unless-stopped
     depends_on:
-      kafka:
-        condition: service_healthy
+      - kafka
     ports:
       - "8080:8080"
     environment:
