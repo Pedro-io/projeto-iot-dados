@@ -70,13 +70,13 @@ projeto-iot-dados/
 
 ## Serviços e Portas
 
-| Serviço | URL | Credenciais | Descrição |
-|---|---|---|---|
-| Kafka Broker | `localhost:9092` | — | Recebe eventos dos sensores |
-| Schema Registry | `http://localhost:8081` | — | Valida e versiona schemas |
-| Kafka UI | `http://localhost:8080` | — | Interface web para tópicos e schemas |
-| MinIO S3 API | `http://localhost:9000` | minioadmin / minioadmin | API de armazenamento |
-| MinIO Console | `http://localhost:9001` | minioadmin / minioadmin | Interface web do lakehouse |
+| Serviço | URL | Descrição |
+|---|---|---|
+| Kafka Broker | `localhost:9092` | Recebe eventos dos sensores |
+| Schema Registry | `http://localhost:8081` | Valida e versiona schemas |
+| Kafka UI | `http://localhost:8080` | Interface web para tópicos e schemas |
+| MinIO S3 API | `http://localhost:9000` | API de armazenamento |
+| MinIO Console | `http://localhost:9001` | Interface web do lakehouse |
 
 ---
 
