@@ -356,7 +356,9 @@ python src/streaming/bronze_consumer.py --dry-run --flush-size 10 --flush-interv
 
 ## Integridade Acadêmica
 
-Uso de IA generativa como ferramenta de apoio ao desenvolvimento. O entendimento do código é responsabilidade da equipe conforme política da disciplina.## Setup
+Uso de IA generativa como ferramenta de apoio ao desenvolvimento. O entendimento do código é responsabilidade da equipe conforme política da disciplina.
+
+## Setup
 
 Para executar este projeto, é necessário ter as seguintes ferramentas instaladas:
 

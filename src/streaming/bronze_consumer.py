@@ -37,7 +37,7 @@ from typing import Any, Dict, List, Optional
 # ---------------------------------------------------------------------------
 try:
     from kafka import KafkaConsumer
-    from kafka.errors import KafkaError, CommitFailedError
+    from kafka.errors import CommitFailedError, KafkaError
 except ImportError:
     print("Erro: kafka-python não instalado. Execute: pip install kafka-python")
     sys.exit(1)
