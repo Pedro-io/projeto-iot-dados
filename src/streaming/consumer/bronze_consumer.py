@@ -561,7 +561,7 @@ class BronzeConsumer:
         self.buffer.add(event)
  
     # ------------------------------------------------------------------
-    # LOOP PRINCIPAL
+    # LOOP PRINCIPAL (BASE_CONSUMER)
     # ------------------------------------------------------------------
  
     def run(self) -> None:
