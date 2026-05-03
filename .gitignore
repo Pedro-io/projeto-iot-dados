@@ -1,6 +1,22 @@
+#.env
+#venv
+#.terraform/
+#.terraform.*
+#*.tfstate
+#*.tfstate.*
+
+# Credenciais
 .env
-.venv
-.terraform/
-.terraform.*
-*.tfstate
-*.tfstate.*
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.egg-info/
+dist/
+build/
+
+# IDEs
+.vscode/
+.idea/
+*.swp
