@@ -171,3 +171,56 @@ PYTHONPATH=src python -m unittest discover -s tests -v
 # Com Poetry
 poetry run python -m unittest discover -s tests -v
 ```
+
+---
+
+## 9. Derrubar o ambiente
+
+Execute na ordem abaixo para encerrar tudo de forma limpa.
+
+### 9a. Parar os processos Python
+
+Nos terminais onde o simulador e o consumer estão rodando, pressione `Ctrl+C`.
+
+### 9b. Derrubar a stack de streaming (Kafka + Schema Registry)
+
+Na raiz do projeto:
+
+```bash
+# Remove containers e volumes (dados do Kafka são descartados)
+docker compose down -v
+
+# Se quiser manter os dados do Kafka para a próxima sessão, omita o -v:
+docker compose down
+```
+
+### 9c. Derrubar a stack de storage (MongoDB, PostgreSQL, MinIO)
+
+```bash
+# Remove containers e volumes (todos os dados são descartados)
+docker compose -f infra/docker/docker-compose.yml --env-file .env down -v
+
+# Se quiser manter os dados persistidos, omita o -v:
+docker compose -f infra/docker/docker-compose.yml --env-file .env down
+```
+
+### 9d. (Opcional) Destruir recursos do Terraform
+
+Só necessário se quiser remover os buckets criados no MinIO:
+
+```bash
+cd infra/terraform
+terraform destroy -auto-approve
+cd ../..
+```
+
+> **Atenção:** `terraform destroy` apaga os buckets `bronze`, `silver` e `gold` e todo o conteúdo deles no MinIO. Só execute se tiver certeza.
+
+### Resumo rápido
+
+| O que derrubar | Comando |
+|---|---|
+| Só streaming | `docker compose down -v` |
+| Só storage | `docker compose -f infra/docker/docker-compose.yml --env-file .env down -v` |
+| Tudo | Os dois comandos acima, nessa ordem |
+| Buckets MinIO (Terraform) | `cd infra/terraform && terraform destroy -auto-approve` |
