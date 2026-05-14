@@ -1,9 +1,9 @@
-#.env
-#venv
-#.terraform/
-#.terraform.*
-#*.tfstate
-#*.tfstate.*
+.env
+venv
+.terraform/
+.terraform.*
+*.tfstate
+*.tfstate.*
 .ruff_cache/
 *.__pycache__/
 
