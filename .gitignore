@@ -1,8 +1,24 @@
-.env
-.venv
-.terraform/
-.terraform.*
-*.tfstate
-*.tfstate.*
+#.env
+#venv
+#.terraform/
+#.terraform.*
+#*.tfstate
+#*.tfstate.*
 .ruff_cache/
 *.__pycache__/
+
+# Credenciais
+.env
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.egg-info/
+dist/
+build/
+
+# IDEs
+.vscode/
+.idea/
+*.swp
