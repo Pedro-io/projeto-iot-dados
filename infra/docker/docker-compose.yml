@@ -35,7 +35,7 @@ services:
       - data-net
       - ui-net
   postgres:
-    image: postgres:16
+    image: postgres:16.13
     container_name: postgres
     restart: unless-stopped
     environment:
@@ -82,7 +82,9 @@ services:
   loki:
     image: grafana/loki:2.9.0
     container_name: loki
+    user: "0"
     volumes:
+      - loki_data:/loki
       - ../../observability/loki-config.yml:/etc/loki/local-config.yaml
     command: -config.file=/etc/loki/local-config.yaml
     restart: unless-stopped
@@ -114,6 +116,7 @@ services:
       - GF_SECURITY_ADMIN_PASSWORD=123
     volumes:
     - ../../observability/grafana/provisioning:/etc/grafana/provisioning
+    - ../../observability/grafana/dashboards:/var/lib/grafana/dashboards 
     depends_on:
       - loki
     networks:
@@ -124,7 +127,7 @@ volumes:
   mongo_data:
   postgres_data:
   minio_data:
-
+  loki_data:
 networks:
   data-net:
     driver: bridge
