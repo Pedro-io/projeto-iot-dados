@@ -41,7 +41,7 @@ projeto-iot-dados/
 ├── pyproject.toml                  # Gerenciamento de dependências (Poetry)
 ├── scripts/
 │   ├── start.sh                    # Sobe toda a infra (Linux/Mac)
-│   └── start.ps1                   # Sobe toda a infra (Windows/PowerShell)
+│   ├── start.ps1                   # Sobe toda a infra (Windows/PowerShell)
 ├── docs/
 │   ├── setup.md                    # Guia de instalação e execução
 │   ├── streaming.md                # Infraestrutura Kafka (serviços, comandos)
@@ -97,7 +97,7 @@ Após subir, os serviços ficam disponíveis em:
 | Grafana | http://localhost:3001 (admin/admin) |
 | MinIO Console | http://localhost:9001 |
 | Kafka UI | http://localhost:8080 |
-| Mongo Express | http://localhost:8081 |
+| Mongo Express | http://localhost:8083 |
 | Adminer | http://localhost:8082 |
 
 **Rodar simulador + consumer (após a infra estar no ar):**
@@ -139,16 +139,6 @@ Guia completo com verificações e modo dry-run: [docs/setup.md](docs/setup.md)
 ## Integridade Acadêmica
 
 Uso de IA generativa como ferramenta de apoio ao desenvolvimento. O entendimento do código, das decisões de arquitetura e dos princípios aplicados é responsabilidade da equipe conforme política da disciplina.
-
----
-
-## Equipe
-
-| Nome | Matrícula | Responsabilidade |
-|---|---|---|
-| — | — | Arquitetura e camada Bronze |
-| — | — | Infraestrutura Docker/Terraform |
-| — | — | Testes e documentação |
 
 ---
 

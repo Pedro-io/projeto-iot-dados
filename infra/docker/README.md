@@ -27,7 +27,7 @@ Esses scripts são executados automaticamente na criação do container, permiti
 
 Interface web para gerenciamento do MongoDB.
 
-* URL: http://localhost:8081
+* URL: http://localhost:8083
 
 ---
 
@@ -82,17 +82,17 @@ Exemplo:
 
 ```bash
 MONGO_USER=admin
-MONGO_PASS=admin
+MONGO_PASS=123
 
 ME_USER=admin
-ME_PASS=admin
+ME_PASS=123
 
 POSTGRES_USER=postgres
-POSTGRES_PASSWORD=postgres
+POSTGRES_PASSWORD=123
 POSTGRES_DB=postgres
 
 MINIO_ROOT_USER=minioadmin
-MINIO_ROOT_PASSWORD=minioadmin
+MINIO_ROOT_PASSWORD=123
 ```
 
 ---
