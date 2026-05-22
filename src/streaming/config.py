@@ -39,10 +39,10 @@ DEFAULT_TOPIC             = _get_required_env("KAFKA_TOPIC")
 DEFAULT_GROUP_ID          = _get_required_env("KAFKA_GROUP_ID")
 
 
-DEFAULT_MINIO_ENDPOINT   = _get_required_env("MINIO_ENDPOINT")
-DEFAULT_MINIO_ACCESS_KEY = _get_required_env("MINIO_ACCESS_KEY")
-DEFAULT_MINIO_SECRET_KEY = _get_required_env("MINIO_SECRET_KEY")
-DEFAULT_BUCKET           = _get_required_env("DEFAULT_BUCKET")
+DEFAULT_MINIO_ENDPOINT     = _get_required_env("MINIO_ENDPOINT")
+DEFAULT_MINIO_ROOT_USER     = _get_required_env("MINIO_ROOT_USER")
+DEFAULT_MINIO_ROOT_PASSWORD = _get_required_env("MINIO_ROOT_PASSWORD")
+DEFAULT_BUCKET              = _get_required_env("DEFAULT_BUCKET")
 
 
 DEFAULT_SCHEMA_REGISTRY_URL = _get_required_env("DEFAULT_SCHEMA_REGISTRY_URL")

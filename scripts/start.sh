@@ -19,9 +19,14 @@ sleep 10
 docker compose -f infra/docker/docker-compose.yml ps
 
 echo "==> Provisionando buckets no MinIO via Terraform..."
+source "$ROOT/.env"
 cd infra/terraform
 terraform init -input=false -reconfigure
-terraform apply -auto-approve -input=false
+terraform apply \
+  -var="minio_endpoint=$MINIO_ENDPOINT" \
+  -var="minio_access_key=$MINIO_ROOT_USER" \
+  -var="minio_secret_key=$MINIO_ROOT_PASSWORD" \
+  -auto-approve -input=false
 cd "$ROOT"
 
 echo "==> Subindo Kafka + Schema Registry + Kafka UI..."

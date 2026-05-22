@@ -35,7 +35,7 @@ except ImportError:
 
 from streaming.config import (
     DEFAULT_BOOTSTRAP_SERVERS, DEFAULT_TOPIC, DEFAULT_GROUP_ID,
-    DEFAULT_MINIO_ENDPOINT, DEFAULT_MINIO_ACCESS_KEY, DEFAULT_MINIO_SECRET_KEY,
+    DEFAULT_MINIO_ENDPOINT, DEFAULT_MINIO_ROOT_USER, DEFAULT_MINIO_ROOT_PASSWORD,
     DEFAULT_BUCKET, DEFAULT_FLUSH_SIZE, DEFAULT_FLUSH_INTERVAL,
     DEFAULT_SCHEMA_REGISTRY_URL,
 )
@@ -123,8 +123,8 @@ def _build_storage(args: argparse.Namespace) -> StorageClient:
         return DryRunClient()
     return MinIOClient(
         endpoint   = args.minio_endpoint,
-        access_key = args.minio_access_key,
-        secret_key = args.minio_secret_key,
+        access_key = args.minio_root_user,
+        secret_key = args.minio_root_password,
         bucket     = args.bucket,
     )
 
@@ -138,8 +138,18 @@ def _parse_args() -> argparse.Namespace:
     parser.add_argument("--topic",               default=DEFAULT_TOPIC)
     parser.add_argument("--group-id",            default=DEFAULT_GROUP_ID)
     parser.add_argument("--minio-endpoint",      default=DEFAULT_MINIO_ENDPOINT)
-    parser.add_argument("--minio-access-key",    default=DEFAULT_MINIO_ACCESS_KEY)
-    parser.add_argument("--minio-secret-key",    default=DEFAULT_MINIO_SECRET_KEY)
+    parser.add_argument(
+        "--minio-root-user", "--minio-access-key",
+        dest="minio_root_user",
+        default=DEFAULT_MINIO_ROOT_USER,
+        help="Root user MinIO / Access key S3",
+    )
+    parser.add_argument(
+        "--minio-root-password", "--minio-secret-key",
+        dest="minio_root_password",
+        default=DEFAULT_MINIO_ROOT_PASSWORD,
+        help="Root password MinIO / Secret key S3",
+    )
     parser.add_argument("--bucket",              default=DEFAULT_BUCKET)
     parser.add_argument("--flush-size",          type=int, default=DEFAULT_FLUSH_SIZE)
     parser.add_argument("--flush-interval",      type=int, default=DEFAULT_FLUSH_INTERVAL)

@@ -83,7 +83,7 @@ poetry install
 
 > Na primeira execução, se o `.env` não existir, o script cria a partir do template e para para você preencher as credenciais.
 
-> O script executa automaticamente o Terraform para provisionar os buckets no MinIO (`terraform init` + `terraform apply`). Certifique-se de ter o Terraform instalado. Detalhes: [infra/terraform/README.md](infra/terraform/README.md)
+> O script executa automaticamente o Terraform para provisionar os buckets no MinIO (`terraform init` + `terraform apply`) — **as credenciais são lidas do `.env`, não é necessário editar `terraform.tfvars`**. Certifique-se de ter o Terraform instalado. Detalhes: [infra/terraform/README.md](infra/terraform/README.md)
 
 > No Windows pode ser necessário liberar execução de scripts antes:
 > ```powershell

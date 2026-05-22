@@ -17,7 +17,24 @@ Write-Host "==> Aguardando healthchecks..."
 Start-Sleep -Seconds 10
 docker compose -f infra/docker/docker-compose.yml ps
 
-# Verifica processos terraform em execução e se o state está bloqueado
+# Carregar variáveis do .env
+$envContent = Get-Content ".env" -Raw
+$envVars = @{}
+foreach ($line in $envContent -split "`n") {
+    $line = $line.Trim()
+    if ($line -and -not $line.StartsWith('#')) {
+        $parts = $line -split '=', 2
+        if ($parts.Length -eq 2) {
+            $key = $parts[0].Trim()
+            $value = $parts[1].Trim()
+            if ($key -and $value) {
+                $envVars[$key] = $value
+            }
+        }
+    }
+}
+
+# Verifica processos terraform em execução
 $tfProcs = Get-Process -Name terraform -ErrorAction SilentlyContinue
 if ($tfProcs) {
     Write-Host "Processo(s) Terraform encontrado(s):"
@@ -32,31 +49,14 @@ if ($tfProcs) {
     }
 }
 
-function Test-FileLocked {
-    param([string]$Path)
-    try {
-        $stream = [System.IO.File]::Open($Path, [System.IO.FileMode]::Open, [System.IO.FileAccess]::ReadWrite, [System.IO.FileShare]::None)
-        $stream.Close()
-        return $false
-    } catch {
-        return $true
-    }
-}
-
-$statePath = Join-Path $Root 'infra/terraform/terraform.tfstate'
-if (Test-Path $statePath) {
-    if (Test-FileLocked $statePath) {
-        Write-Host "Atenção: terraform.tfstate parece estar bloqueado por outro processo."
-        Write-Host "Considere checar handles com Resource Monitor ou reiniciar a máquina."
-        $cont = Read-Host "Deseja continuar mesmo assim (pode falhar)? (s/N)"
-        if ($cont -notmatch '^[sS]') { exit 1 }
-    }
-}
-
 Write-Host "==> Provisionando buckets no MinIO via Terraform..."
 Set-Location "infra/terraform"
-terraform init -input=false -reconfigure
-terraform apply -auto-approve -input=false
+& terraform init -input=false -reconfigure
+& terraform apply `
+    -var="minio_endpoint=$($envVars['MINIO_ENDPOINT'])" `
+    -var="minio_access_key=$($envVars['MINIO_ROOT_USER'])" `
+    -var="minio_secret_key=$($envVars['MINIO_ROOT_PASSWORD'])" `
+    -auto-approve -input=false
 Set-Location $Root
 
 Write-Host "==> Subindo Kafka + Schema Registry + Kafka UI..."
