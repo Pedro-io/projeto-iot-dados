@@ -142,8 +142,8 @@ Todas as configurações podem ser definidas via `.env` ou argumentos CLI (CLI s
 | `--topic` | `KAFKA_TOPIC` | `iot-sensors-raw` | Tópico a consumir |
 | `--group-id` | `KAFKA_GROUP_ID` | `bronze-writer` | Consumer group ID |
 | `--minio-endpoint` | `MINIO_ENDPOINT` | `http://localhost:9000` | Endpoint do MinIO |
-| `--minio-access-key` | `MINIO_ACCESS_KEY` | `minioadmin` | Access key MinIO |
-| `--minio-secret-key` | `MINIO_SECRET_KEY` | `minioadmin` | Secret key MinIO |
+| `--minio-root-user` | `MINIO_ROOT_USER` | `minioadmin` | Root user MinIO / Access key S3 |
+| `--minio-root-password` | `MINIO_ROOT_PASSWORD` | `123` | Root password MinIO / Secret key S3 |
 | `--bucket` | `DEFAULT_BUCKET` | `bronze` | Bucket de destino |
 | `--flush-size` | `DEFAULT_FLUSH_SIZE` | `100` | Eventos por arquivo |
 | `--flush-interval` | `DEFAULT_FLUSH_INTERVAL` | `30` | Segundos máximos entre gravações |

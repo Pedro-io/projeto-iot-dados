@@ -62,11 +62,15 @@ services:
         max-file: "5"
         tag: "{{.Name}}"
     healthcheck:
-      test: ["CMD", "kafka-topics.sh", "--bootstrap-server", "localhost:9092", "--list"]
+      test:
+        [
+          "CMD-SHELL",
+          "kafka-broker-api-versions --bootstrap-server localhost:9092 > /dev/null 2>&1"
+        ]
       interval: 30s
-      timeout: 30s
+      timeout: 10s
       retries: 10
-      start_period: 30s
+      start_period: 60s
     volumes:
       - kafka_data:/var/lib/kafka/data
 
@@ -149,8 +153,5 @@ services:
         max-file: "3"
         tag: "{{.Name}}"
 
-# =============================================================================
-# Volumes persistentes
-# =============================================================================
 volumes:
   kafka_data:

@@ -28,6 +28,7 @@ Decisões de arquitetura e ADRs: [docs/arquitetura.md](docs/arquitetura.md)
 | Banco de Dados | MongoDB + PostgreSQL |
 | IaC | Terraform |
 | Linguagem | Python 3.10+ (Poetry) |
+| Observabilidade | Grafana + Loki + Promtail |
 
 ---
 
@@ -38,6 +39,9 @@ projeto-iot-dados/
 ├── docker-compose.yml              # Stack de streaming (Kafka + Schema Registry)
 ├── .env.template                   # Template de variáveis de ambiente
 ├── pyproject.toml                  # Gerenciamento de dependências (Poetry)
+├── scripts/
+│   ├── start.sh                    # Sobe toda a infra (Linux/Mac)
+│   ├── start.ps1                   # Sobe toda a infra (Windows/PowerShell)
 ├── docs/
 │   ├── setup.md                    # Guia de instalação e execução
 │   ├── streaming.md                # Infraestrutura Kafka (serviços, comandos)
@@ -45,6 +49,7 @@ projeto-iot-dados/
 │   ├── troubleshooting.md          # Solução de problemas e comandos úteis
 │   ├── arquitetura.md              # ADRs e decisões arquiteturais
 │   ├── modelo-dados.md             # Modelagem MongoDB
+│   ├── observability.md            # Stack de logs — Grafana, Loki, Promtail
 │   └── gaps-e-pendencias.md        # O que ainda não foi implementado
 ├── infra/
 │   ├── docker/                     # Stack de storage (MongoDB, PostgreSQL, MinIO)
@@ -60,22 +65,43 @@ projeto-iot-dados/
 ## Quick Start
 
 ```bash
-# 1. Clonar e configurar ambiente
+# 1. Clonar e instalar dependências Python
 git clone https://github.com/Pedro-io/projeto-iot-dados.git
 cd projeto-iot-dados
-cp .env.template .env
 poetry install
+```
 
-# 2. Subir storage
-docker compose --env-file .env -f infra/docker/docker-compose.yml up -d
+**Linux/Mac — subir toda a infra com um comando:**
+```bash
+./scripts/start.sh
+```
 
-# 3. Provisionar buckets no MinIO
-cd infra/terraform && terraform init && terraform apply -auto-approve && cd ../..
+**Windows (PowerShell) — subir toda a infra com um comando:**
+```powershell
+.\scripts\start.ps1
+```
 
-# 4. Subir streaming
-docker compose up -d
+> Na primeira execução, se o `.env` não existir, o script cria a partir do template e para para você preencher as credenciais.
 
-# 5. Rodar simulador + consumer
+> O script executa automaticamente o Terraform para provisionar os buckets no MinIO (`terraform init` + `terraform apply`) — **as credenciais são lidas do `.env`, não é necessário editar `terraform.tfvars`**. Certifique-se de ter o Terraform instalado. Detalhes: [infra/terraform/README.md](infra/terraform/README.md)
+
+> No Windows pode ser necessário liberar execução de scripts antes:
+> ```powershell
+> Set-ExecutionPolicy -Scope CurrentUser RemoteSigned
+> ```
+
+Após subir, os serviços ficam disponíveis em:
+
+| Serviço | URL |
+|---|---|
+| Grafana | http://localhost:3001 (admin/admin) |
+| MinIO Console | http://localhost:9001 |
+| Kafka UI | http://localhost:8080 |
+| Mongo Express | http://localhost:8083 |
+| Adminer | http://localhost:8082 |
+
+**Rodar simulador + consumer (após a infra estar no ar):**
+```bash
 poetry run python src/ingestao/sensor_simulator.py --events-per-second 50
 cd src && poetry run python -m streaming.consumer.bronze_consumer
 ```
@@ -94,6 +120,7 @@ Guia completo com verificações e modo dry-run: [docs/setup.md](docs/setup.md)
 | [docs/troubleshooting.md](docs/troubleshooting.md) | Erros comuns e comandos úteis |
 | [docs/arquitetura.md](docs/arquitetura.md) | ADRs e decisões arquiteturais |
 | [docs/modelo-dados.md](docs/modelo-dados.md) | Modelagem MongoDB |
+| [docs/observability.md](docs/observability.md) | Stack de logs — Grafana, Loki, Promtail |
 | [infra/docker/README.md](infra/docker/README.md) | Stack Docker de storage |
 | [infra/terraform/README.md](infra/terraform/README.md) | Terraform — buckets MinIO |
 
@@ -112,16 +139,6 @@ Guia completo com verificações e modo dry-run: [docs/setup.md](docs/setup.md)
 ## Integridade Acadêmica
 
 Uso de IA generativa como ferramenta de apoio ao desenvolvimento. O entendimento do código, das decisões de arquitetura e dos princípios aplicados é responsabilidade da equipe conforme política da disciplina.
-
----
-
-## Equipe
-
-| Nome | Matrícula | Responsabilidade |
-|---|---|---|
-| — | — | Arquitetura e camada Bronze |
-| — | — | Infraestrutura Docker/Terraform |
-| — | — | Testes e documentação |
 
 ---
 

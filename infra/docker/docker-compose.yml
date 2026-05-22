@@ -14,7 +14,8 @@ services:
     healthcheck:
       test: ["CMD", "mongosh", "--eval", "db.adminCommand('ping')"]
       interval: 10s
-      timeout: 5s
+      timeout: 30s
+      start_period: 30s
       retries: 5
 
   mongo-express:
@@ -22,7 +23,7 @@ services:
     container_name: mongo-express
     restart: unless-stopped
     ports:
-      - "8081:8081"
+      - "8083:8081"
     environment:
       ME_CONFIG_MONGODB_URL: mongodb://${MONGO_USER}:${MONGO_PASS}@mongodb:27017/?authSource=admin
       ME_CONFIG_BASICAUTH_USERNAME: ${ME_USER}
@@ -34,7 +35,7 @@ services:
       - data-net
       - ui-net
   postgres:
-    image: postgres:16
+    image: postgres:16.13
     container_name: postgres
     restart: unless-stopped
     environment:
@@ -78,12 +79,55 @@ services:
       - minio_data:/data
     networks:
       - data-net
+  loki:
+    image: grafana/loki:2.9.0
+    container_name: loki
+    user: "0"
+    volumes:
+      - loki_data:/loki
+      - ../../observability/loki-config.yml:/etc/loki/local-config.yaml
+    command: -config.file=/etc/loki/local-config.yaml
+    restart: unless-stopped
+    ports:
+      - "3100:3100"
+    networks:
+      - data-net
+
+  promtail:
+    image: grafana/promtail:2.9.0
+    container_name: promtail
+    restart: unless-stopped
+    volumes:
+      - /var/lib/docker/containers:/var/lib/docker/containers:ro
+      - ../../observability/promtail-config.yml:/etc/promtail/config.yml
+    command: -config.file=/etc/promtail/config.yml
+    depends_on:
+      - loki
+    networks:
+      - data-net
+
+  grafana:
+    image: grafana/grafana:10.0.0
+    container_name: grafana
+    restart: unless-stopped
+    ports:
+      - "3001:3000"
+    environment:
+      - GF_SECURITY_ADMIN_PASSWORD=123
+    volumes:
+    - ../../observability/grafana/provisioning:/etc/grafana/provisioning
+    - ../../observability/grafana/dashboards:/var/lib/grafana/dashboards 
+    depends_on:
+      - loki
+    networks:
+      - ui-net
+      - data-net
 
 volumes:
   mongo_data:
   postgres_data:
   minio_data:
-
+  loki_data:
 networks:
   data-net:
     driver: bridge

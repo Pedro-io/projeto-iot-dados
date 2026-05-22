@@ -39,8 +39,8 @@ Edite `.env` com seus valores:
 ```bash
 # MinIO
 MINIO_ENDPOINT=http://localhost:9000
-MINIO_ACCESS_KEY=minioadmin
-MINIO_SECRET_KEY=minioadmin
+MINIO_ROOT_USER=minioadmin
+MINIO_ROOT_PASSWORD=123
 DEFAULT_BUCKET=bronze
 
 # Kafka
@@ -75,52 +75,42 @@ pip install kafka-python boto3 requests python-dotenv
 
 ---
 
-## 4. Subir a infraestrutura
+## 4. Subir TODA a infraestrutura com um comando
 
-A infraestrutura é dividida em duas stacks independentes. Suba na ordem abaixo.
-
-### 4a. Stack de storage (MongoDB, PostgreSQL, MinIO)
+**Linux/Mac:**
 
 ```bash
-docker compose -f infra/docker/docker-compose.yml --env-file .env up -d
+./scripts/start.sh
 ```
 
-Detalhes: [infra/docker/README.md](../infra/docker/README.md)
+**Windows (PowerShell):**
 
-### 4b. Provisionar buckets no MinIO via Terraform
-
-```bash
-cd infra/terraform
-terraform init
-terraform apply -auto-approve
-cd ../..
+```powershell
+.\scripts\start.ps1
 ```
 
-Isso cria os buckets `bronze`, `silver` e `gold` no MinIO. Detalhes: [infra/terraform/README.md](../infra/terraform/README.md)
+Esse script automaticamente:
 
-### 4c. Stack de streaming (Kafka + Schema Registry)
+1. ✅ Sobe storage (MongoDB, PostgreSQL, MinIO)
+2. ✅ Lê credenciais do `.env`
+3. ✅ Provisiona buckets no MinIO via Terraform (`bronze`, `silver`, `gold`)
+4. ✅ Sobe Kafka + Schema Registry
 
-```bash
-docker compose up -d
-```
+---
 
-Verifique o status após 30 segundos:
+### Detalhes
+
+Para entender melhor cada componente:
+
+* Storage: [infra/docker/README.md](../infra/docker/README.md)
+* Terraform (automático): [infra/terraform/README.md](../infra/terraform/README.md)
+* Streaming: [docs/streaming.md](streaming.md)
+
+Após alguns segundos, verifique o status com:
 
 ```bash
 docker compose ps
 ```
-
-Saída esperada:
-
-```
-NAME                   STATUS
-kafka                  Up (healthy)
-schema-registry        Up (healthy)
-schema-registry-init   Exited (0)
-kafka-ui               Up
-```
-
-Detalhes: [docs/streaming.md](streaming.md)
 
 ---
 
@@ -158,7 +148,7 @@ cd src && python -m streaming.consumer.bronze_consumer --dry-run
 | Kafka UI | http://localhost:8080 | Topics → iot-sensors-raw → Messages |
 | Schema Registry | http://localhost:8081/subjects | Schema registrado |
 | MinIO Console | http://localhost:9001 | Bucket `bronze` → pastas `factory_id=...` |
-| Mongo Express | http://localhost:8081 | Coleção `equipments` (requer infra/docker stack) |
+| Mongo Express | http://localhost:8083 | Coleção `equipments` (requer infra/docker stack) |
 
 ---
 
