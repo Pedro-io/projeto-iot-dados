@@ -122,6 +122,15 @@ services:
     networks:
       - ui-net
       - data-net
+  
+  spark:
+    build:
+      context: ./spark #usa a imagem do Dockerfile
+    container_name: spark
+    networks:
+      - data-net
+    volumes:
+      - ../../src:/app
 
 volumes:
   mongo_data:
