@@ -1,5 +1,0 @@
-CREATE TABLE teste.teste (
-    id SERIAL PRIMARY KEY,
-    nome TEXT,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-);
