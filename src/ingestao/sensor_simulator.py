@@ -177,7 +177,7 @@ class KafkaSensorProducer:
         """Envia um evento para Kafka."""
         key = event.get("equipment_id")  # Particionar por equipamento
         try:
-            future = self.producer.send(self.topic, key=key, value=event)
+            self.producer.send(self.topic, key=key, value=event)
             # Não esperar confirmação para cada mensagem (async)
         except KafkaError as e:
             print(f"❌ Erro ao enviar: {e}")
