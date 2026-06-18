@@ -7,13 +7,15 @@ from typing import Optional
 # pydeequ lê SPARK_VERSION no import; precisa ser definido antes
 os.environ.setdefault("SPARK_VERSION", "3.5")
 
-from utils.logger import logger
 from delta.exceptions import ConcurrentAppendException
 from delta.tables import DeltaTable
+from pydeequ.checks import Check, CheckLevel, ConstrainableDataTypes
+from pydeequ.verification import VerificationResult, VerificationSuite
 from pyspark.sql import DataFrame, SparkSession
 from pyspark.sql.functions import col, current_timestamp, lit
 from pyspark.sql.utils import AnalysisException
-from pydeequ.checks import Check, CheckLevel, ConstrainableDataTypes
+
+from utils.logger import logger
 
 
 class AbstractETL(ABC):
@@ -75,7 +77,6 @@ class AbstractETL(ABC):
         pass
 
     def run_unit_tests(self) -> None:
-        os.environ["SPARK_VERSION"] = "3.5"
 
         self.ErrorCheck = Check(self.spark, CheckLevel.Error, "Error Check")
         self.WarningCheck = Check(self.spark, CheckLevel.Warning, "Warning Check")
@@ -114,8 +115,6 @@ class AbstractETL(ABC):
 
     def _run_unit_tests_per_level(self, checks) -> Optional[DataFrame]:
         if checks:
-            from pydeequ.verification import VerificationResult, VerificationSuite
-
             result = (
                 VerificationSuite(self.spark).onData(self.df).addCheck(checks).run()
             )
