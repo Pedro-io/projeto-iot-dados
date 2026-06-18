@@ -1,6 +1,6 @@
-# Projeto IoT Lakehouse — Plataforma de Integração de Dados
+# Projeto IoT Lakehouse - Plataforma de Integração de Dados
 
-Plataforma de integração de dados para monitoramento industrial, desenvolvida como Projeto Integrador da disciplina **Integração de Dados II (2026/1)** — PUC Minas.
+Plataforma de integração de dados para monitoramento industrial, desenvolvida como Projeto Integrador da disciplina **Integração de Dados II (2026/1)** - PUC Minas.
 
 O sistema ingere eventos de sensores IoT em tempo real via Apache Kafka, valida os schemas via Confluent Schema Registry, persiste os dados brutos no MinIO com arquitetura **Medallion** (Bronze → Silver → Gold) e emite logs estruturados em JSON para observabilidade.
 
@@ -49,14 +49,14 @@ projeto-iot-dados/
 │   ├── troubleshooting.md          # Solução de problemas e comandos úteis
 │   ├── arquitetura.md              # ADRs e decisões arquiteturais
 │   ├── modelo-dados.md             # Modelagem MongoDB
-│   ├── observability.md            # Stack de logs — Grafana, Loki, Promtail
+│   ├── observability.md            # Stack de logs - Grafana, Loki, Promtail
 │   └── gaps-e-pendencias.md        # O que ainda não foi implementado
 ├── infra/
 │   ├── docker/                     # Stack de storage (MongoDB, PostgreSQL, MinIO)
 │   └── terraform/                  # Provisionamento dos buckets S3 no MinIO
 └── src/
     ├── ingestao/
-    │   └── sensor_simulator.py     # Produtor Kafka — simula sensores IoT
+    │   └── sensor_simulator.py     # Produtor Kafka - simula sensores IoT
     └── streaming/                  # Consumer Bronze e componentes SOLID
 ```
 
@@ -71,19 +71,19 @@ cd projeto-iot-dados
 poetry install
 ```
 
-**Linux/Mac — subir toda a infra com um comando:**
+**Linux/Mac - subir toda a infra com um comando:**
 ```bash
 ./scripts/start.sh
 ```
 
-**Windows (PowerShell) — subir toda a infra com um comando:**
+**Windows (PowerShell) - subir toda a infra com um comando:**
 ```powershell
 .\scripts\start.ps1
 ```
 
 > Na primeira execução, se o `.env` não existir, o script cria a partir do template e para para você preencher as credenciais.
 
-> O script executa automaticamente o Terraform para provisionar os buckets no MinIO (`terraform init` + `terraform apply`) — **as credenciais são lidas do `.env`, não é necessário editar `terraform.tfvars`**. Certifique-se de ter o Terraform instalado. Detalhes: [infra/terraform/README.md](infra/terraform/README.md)
+> O script executa automaticamente o Terraform para provisionar os buckets no MinIO (`terraform init` + `terraform apply`) - **as credenciais são lidas do `.env`, não é necessário editar `terraform.tfvars`**. Certifique-se de ter o Terraform instalado. Detalhes: [infra/terraform/README.md](infra/terraform/README.md)
 
 > No Windows pode ser necessário liberar execução de scripts antes:
 > ```powershell
@@ -115,24 +115,24 @@ Guia completo com verificações e modo dry-run: [docs/setup.md](docs/setup.md)
 | Documento | Conteúdo |
 |---|---|
 | [docs/setup.md](docs/setup.md) | Instalação, execução passo a passo, verificações |
-| [docs/streaming.md](docs/streaming.md) | Stack Kafka — serviços, portas, comandos |
+| [docs/streaming.md](docs/streaming.md) | Stack Kafka - serviços, portas, comandos |
 | [docs/consumer-bronze.md](docs/consumer-bronze.md) | Arquitetura SOLID, particionamento, logs, parâmetros |
 | [docs/troubleshooting.md](docs/troubleshooting.md) | Erros comuns e comandos úteis |
 | [docs/arquitetura.md](docs/arquitetura.md) | ADRs e decisões arquiteturais |
 | [docs/modelo-dados.md](docs/modelo-dados.md) | Modelagem MongoDB |
-| [docs/observability.md](docs/observability.md) | Stack de logs — Grafana, Loki, Promtail |
+| [docs/observability.md](docs/observability.md) | Stack de logs - Grafana, Loki, Promtail |
 | [infra/docker/README.md](infra/docker/README.md) | Stack Docker de storage |
-| [infra/terraform/README.md](infra/terraform/README.md) | Terraform — buckets MinIO |
+| [infra/terraform/README.md](infra/terraform/README.md) | Terraform - buckets MinIO |
 
 ---
 
 ## Roadmap
 
-- [ ] **E2 — Silver:** Deduplicação, limpeza e tipagem via PySpark
-- [ ] **E2 — Gold:** Agregações horárias/diárias para dashboards
-- [ ] **E3 — Observabilidade:** Métricas Prometheus + Grafana
-- [ ] **E3 — CI/CD:** GitHub Actions com linting + testes + build Docker
-- [ ] **E4 — Schema Evolution:** Suporte a múltiplas versões de schema
+- [ ] **E2 - Silver:** Deduplicação, limpeza e tipagem via PySpark
+- [ ] **E2 - Gold:** Agregações horárias/diárias para dashboards
+- [ ] **E3 - Observabilidade:** Métricas Prometheus + Grafana
+- [ ] **E3 - CI/CD:** GitHub Actions com linting + testes + build Docker
+- [ ] **E4 - Schema Evolution:** Suporte a múltiplas versões de schema
 
 ---
 
@@ -142,4 +142,4 @@ Uso de IA generativa como ferramenta de apoio ao desenvolvimento. O entendimento
 
 ---
 
-*Projeto acadêmico — PUC Minas 2026/1*
+*Projeto acadêmico - PUC Minas 2026/1*

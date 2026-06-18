@@ -8,7 +8,7 @@ from typing import Any, Dict, List
 class PartitionedBuffer:
     """
     Agrupa eventos por (factory_id, measurement_type, data UTC) antes de
-    persistir — produz layout Hive-style que Spark/Athena/Trino conseguem
+    persistir - produz layout Hive-style que Spark/Athena/Trino conseguem
     fazer pruning de partições.
     """
 

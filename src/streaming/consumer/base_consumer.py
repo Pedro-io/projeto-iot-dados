@@ -1,4 +1,4 @@
-"""Loop genérico de consumo Kafka — base para Bronze, Silver, Gold."""
+"""Loop genérico de consumo Kafka - base para Bronze, Silver, Gold."""
 import logging
 import time
 from abc import ABC, abstractmethod
@@ -83,7 +83,7 @@ class BaseConsumer(ABC):
                         self._log_stats()
                     except Exception as exc:
                         log.error(
-                            "Flush falhou — offset NÃO commitado",
+                            "Flush falhou - offset NÃO commitado",
                             extra={"error": str(exc)}
                         )
 
@@ -100,7 +100,7 @@ class BaseConsumer(ABC):
 
         if not result.is_valid:
             log.warning(
-                "Evento inválido — enviado para DLQ",
+                "Evento inválido - enviado para DLQ",
                 extra={
                     "offset":    message.offset,
                     "partition": message.partition,
@@ -118,7 +118,7 @@ class BaseConsumer(ABC):
         self.buffer.add(result.event)
 
     def _shutdown(self) -> None:
-        log.info("Encerrando — gravando buffer restante")
+        log.info("Encerrando - gravando buffer restante")
         remaining = self.buffer.total()
         if remaining > 0 or self._dlq:
             try:

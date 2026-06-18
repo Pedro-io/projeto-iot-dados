@@ -5,7 +5,7 @@
 
 ---
 
-## O que está implementado (E1 — Completo)
+## O que está implementado (E1 - Completo)
 
 | Componente | Localização | Status |
 |---|---|---|
@@ -26,7 +26,7 @@
 
 ## O que NÃO temos
 
-### 1. Camada Silver — Processamento (E2, alta prioridade)
+### 1. Camada Silver - Processamento (E2, alta prioridade)
 
 A camada Silver é o próximo passo crítico da arquitetura Medallion. Os dados brutos no MinIO (`bronze/`) precisam ser limpos, deduplicados e tipados para uso analítico.
 
@@ -46,7 +46,7 @@ A camada Silver é o próximo passo crítico da arquitetura Medallion. Os dados 
 
 ---
 
-### 2. Camada Gold — Agregações (E2/E3)
+### 2. Camada Gold - Agregações (E2/E3)
 
 Camada de consumo analítico. Alimenta dashboards e relatórios.
 
@@ -54,7 +54,7 @@ Camada de consumo analítico. Alimenta dashboards e relatórios.
 
 | Item | Descrição |
 |---|---|
-| Job de agregação horária | Agrupa leituras por `(factory_id, measurement_type, hour)` — média, min, max, p95 |
+| Job de agregação horária | Agrupa leituras por `(factory_id, measurement_type, hour)` - média, min, max, p95 |
 | Job de agregação diária | Sumariza métricas diárias por equipamento |
 | Detecção de anomalias agregadas | % de leituras anômalas por hora/dia por sensor |
 | Escrita no Gold | Grava em `gold/` no MinIO (Parquet ideal para BI) |
@@ -135,7 +135,7 @@ O arquivo `docs/runbook.md` está **vazio**.
 
 | Item | Situação atual |
 |---|---|
-| Kafka sem autenticação/TLS | PLAINTEXT listener — adequado apenas para dev local |
+| Kafka sem autenticação/TLS | PLAINTEXT listener - adequado apenas para dev local |
 | MinIO com credenciais padrão | `minioadmin:minioadmin` hardcoded no `docker-compose_tulio.yml` |
 | Schema Registry sem auth | Acesso aberto na porta 8081 |
 | Variáveis sensíveis sem rotação | Nenhum mecanismo de secrets (Vault, AWS Secrets Manager) |
@@ -148,9 +148,9 @@ O arquivo `docs/runbook.md` está **vazio**.
 |---|---|
 | `pyproject.toml` sem dependências declaradas | As dependências Python (kafka-python, boto3, requests, python-dotenv) não estão listadas explicitamente no `[tool.poetry.dependencies]` |
 | `docker-compose_tulio.yml` com nome não-padrão | Nome do arquivo deveria ser `docker-compose.yml` ou `docker-compose.e1.yml` para facilitar uso com `docker compose up` sem `-f` |
-| Infraestrutura Docker fragmentada | Existe `docker-compose_tulio.yml` (E1 stack completa) e `infra/docker/docker-compose.yml` (legacy MongoDB/Postgres) — pode gerar confusão |
+| Infraestrutura Docker fragmentada | Existe `docker-compose_tulio.yml` (E1 stack completa) e `infra/docker/docker-compose.yml` (legacy MongoDB/Postgres) - pode gerar confusão |
 | Schema Evolution | Não há suporte a múltiplas versões de schema (breaking changes no formato de evento quebraria o consumer) |
-| Testes de integração | Apenas testes unitários com mocks — sem testes rodando contra Kafka/MinIO reais |
+| Testes de integração | Apenas testes unitários com mocks - sem testes rodando contra Kafka/MinIO reais |
 
 ---
 

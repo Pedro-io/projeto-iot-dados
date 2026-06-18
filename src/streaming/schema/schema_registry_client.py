@@ -47,12 +47,12 @@ class SchemaRegistryClient:
                 )
             else:
                 log.warning(
-                    "Schema Registry retornou status inesperado — usando validação local",
+                    "Schema Registry retornou status inesperado - usando validação local",
                     extra={"status_code": resp.status_code, "subject": self.subject}
                 )
         except requests.exceptions.ConnectionError:
             log.warning(
-                "Schema Registry indisponível — usando validação local como fallback",
+                "Schema Registry indisponível - usando validação local como fallback",
                 extra={"schema_registry_url": self.url}
             )
         except Exception as exc:

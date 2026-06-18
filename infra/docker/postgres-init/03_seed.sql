@@ -1,5 +1,5 @@
 -- ============================================================
--- ERP LEGADO — Dados de carga inicial (lookup + mestres fixos)
+-- ERP LEGADO - Dados de carga inicial (lookup + mestres fixos)
 -- ============================================================
 
 INSERT INTO erp_legado.tipos_equipamento (nome, descricao) VALUES

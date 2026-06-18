@@ -1,4 +1,4 @@
-## Consumer Bronze — Documentação Técnica
+## Consumer Bronze - Documentação Técnica
 
 Documentação do consumer Kafka responsável pela camada Bronze da arquitetura Medallion.
 
@@ -32,7 +32,7 @@ Kafka ──► consumer├──┤  BaseConsumer (loop, commit, DLQ)│  │
 | **SRP** | Cada classe tem uma única responsabilidade (Buffer, Validador, Processor, Storage) |
 | **OCP** | `StorageClient` como Protocol permite adicionar backends (S3, GCS) sem alterar o consumer |
 | **LSP** | `BaseConsumer` pode ser herdado por Silver/Gold mantendo comportamento consistente |
-| **ISP** | Interfaces específicas por camada — sem interface monolítica |
+| **ISP** | Interfaces específicas por camada - sem interface monolítica |
 | **DIP** | Consumer depende de abstrações (`StorageClient` Protocol), não de implementações concretas |
 
 ---
@@ -78,7 +78,7 @@ Cada evento é enriquecido com metadados de ingestão:
 
 ## Logs Estruturados
 
-O consumer emite logs em **JSON Lines** — um objeto por linha, compatível com Elasticsearch, Loki e CloudWatch sem parsing adicional.
+O consumer emite logs em **JSON Lines** - um objeto por linha, compatível com Elasticsearch, Loki e CloudWatch sem parsing adicional.
 
 **Gravação bem-sucedida:**
 
@@ -148,8 +148,8 @@ Todas as configurações podem ser definidas via `.env` ou argumentos CLI (CLI s
 | `--flush-size` | `DEFAULT_FLUSH_SIZE` | `100` | Eventos por arquivo |
 | `--flush-interval` | `DEFAULT_FLUSH_INTERVAL` | `30` | Segundos máximos entre gravações |
 | `--schema-registry-url` | `DEFAULT_SCHEMA_REGISTRY_URL` | `http://localhost:8081` | URL do Schema Registry |
-| `--dry-run` | — | `false` | Consome e valida sem gravar no MinIO |
-| `--log-level` | — | `INFO` | Nível de log (DEBUG, INFO, WARNING, ERROR) |
+| `--dry-run` | - | `false` | Consome e valida sem gravar no MinIO |
+| `--log-level` | - | `INFO` | Nível de log (DEBUG, INFO, WARNING, ERROR) |
 
 ---
 
@@ -169,12 +169,12 @@ Todas as configurações podem ser definidas via `.env` ou argumentos CLI (CLI s
 
 ## Decisões Técnicas
 
-**Commit manual de offset:** o consumer só confirma o offset após gravar com sucesso no MinIO. Se o processo cair no meio, as mensagens são reprocessadas — garantindo at-least-once delivery sem perda de dados.
+**Commit manual de offset:** o consumer só confirma o offset após gravar com sucesso no MinIO. Se o processo cair no meio, as mensagens são reprocessadas - garantindo at-least-once delivery sem perda de dados.
 
 **Chave de particionamento por `equipment_id`:** garante que eventos do mesmo equipamento sempre vão para a mesma partição Kafka, preservando a ordem cronológica necessária para análise de séries temporais no Silver.
 
 **Dead-letter queue:** eventos com schema inválido são isolados em `bronze/_dead_letter/` com o motivo do erro registrado em `_dlq_reason`, sem travar o pipeline principal.
 
-**Fallback de validação:** se o Schema Registry estiver offline, o consumer usa o schema local como fallback automático — o pipeline nunca para por indisponibilidade do Registry.
+**Fallback de validação:** se o Schema Registry estiver offline, o consumer usa o schema local como fallback automático - o pipeline nunca para por indisponibilidade do Registry.
 
 **Testes sem dependências externas:** 35 testes unitários cobrem todas as camadas usando mocks para Kafka e Storage. É possível rodar `python -m unittest discover` sem ter Kafka ou MinIO rodando.

@@ -11,7 +11,7 @@ from datetime import datetime
 
 class JsonFormatter(logging.Formatter):
     """
-    Formata logs como JSON Lines — cada linha é um objeto JSON independente.
+    Formata logs como JSON Lines - cada linha é um objeto JSON independente.
 
     Exemplo de saída:
         {"timestamp": "2025-03-29T14:30:00Z", "level": "INFO",

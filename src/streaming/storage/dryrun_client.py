@@ -1,4 +1,4 @@
-"""Cliente fake — simula gravação sem fazer I/O.
+"""Cliente fake - simula gravação sem fazer I/O.
 
 Implementa o mesmo contrato (StorageClient) que MinIOClient, permitindo
 ao consumer ser executado em modo `--dry-run` sem tocar em MinIO/S3.

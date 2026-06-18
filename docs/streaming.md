@@ -1,4 +1,4 @@
-## Streaming — Infraestrutura Kafka
+## Streaming - Infraestrutura Kafka
 
 Este documento descreve a stack de streaming do projeto, responsável por receber e rotear eventos dos sensores IoT em tempo real.
 
@@ -16,7 +16,7 @@ Broker de mensagens que recebe os eventos dos sensores IoT.
 * Tópico principal: `iot-sensors-raw`
 * Modo: KRaft (sem Zookeeper)
 
-Na primeira subida, a imagem formata automaticamente o storage usando o `CLUSTER_ID` definido no compose — nenhuma ação manual é necessária.
+Na primeira subida, a imagem formata automaticamente o storage usando o `CLUSTER_ID` definido no compose - nenhuma ação manual é necessária.
 
 ---
 
@@ -26,7 +26,7 @@ Serviço de validação e versionamento de schemas JSON.
 
 * URL: `http://localhost:8081`
 
-O schema do tópico `iot-sensors-raw` é registrado automaticamente pelo serviço `schema-registry-init` na inicialização. Após concluir, o container encerra com `Exited (0)` — comportamento esperado.
+O schema do tópico `iot-sensors-raw` é registrado automaticamente pelo serviço `schema-registry-init` na inicialização. Após concluir, o container encerra com `Exited (0)` - comportamento esperado.
 
 Para verificar se o schema foi registrado:
 
@@ -68,7 +68,7 @@ Sensores IoT (Simulador)
   (Python)                    Valida schema do evento
         │
         ▼
-  MinIO — Camada Bronze
+  MinIO - Camada Bronze
   factory_id=.../measurement_type=.../dt=.../batch_xxx.ndjson
 ```
 
@@ -129,7 +129,7 @@ docker compose down -v
 
 ## Observações
 
-* O Kafka usa KRaft — não há dependência de Zookeeper
+* O Kafka usa KRaft - não há dependência de Zookeeper
 * O Schema Registry deve estar saudável antes de rodar o consumer
 * Se o Schema Registry estiver offline, o consumer usa validação local como fallback automático
-* A stack de storage (MinIO, MongoDB, PostgreSQL) é separada — ver [infra/docker/README.md](../infra/docker/README.md)
+* A stack de storage (MinIO, MongoDB, PostgreSQL) é separada - ver [infra/docker/README.md](../infra/docker/README.md)
