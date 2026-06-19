@@ -1,7 +1,7 @@
 # ATENÇÃO: Estes valores são OVERRIDE pelo script start.sh/start.ps1
 # que lê as credenciais reais do .env na raiz do projeto.
 # 
-# Mantenha este arquivo como referência apenas — não edite os valores aqui.
+# Mantenha este arquivo como referência apenas - não edite os valores aqui.
 # Em vez disso, edite o .env na raiz do projeto:
 #   MINIO_ENDPOINT=http://localhost:9000
 #   MINIO_ROOT_USER=1234

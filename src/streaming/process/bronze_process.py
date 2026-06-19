@@ -25,7 +25,7 @@ class BronzeProcessor:
       2. Enriquece com metadados de ingestão (Kafka offset/partition/topic/key)
       3. Sinaliza anomalias quando is_anomaly == True
 
-    Retorna sempre um ProcessResult — não levanta exceção para eventos
+    Retorna sempre um ProcessResult - não levanta exceção para eventos
     inválidos, apenas marca is_valid=False com o motivo.
     """
 
@@ -42,7 +42,7 @@ class BronzeProcessor:
             event["_kafka_partition"] = message.partition
             return ProcessResult(is_valid=False, event=event, reason=reason)
 
-        # Enriquecimento — metadados de ingestão (prefixo "_" para distinguir
+        # Enriquecimento - metadados de ingestão (prefixo "_" para distinguir
         # do payload original)
         event["_ingested_at"]     = datetime.utcnow().isoformat() + "Z"
         event["_kafka_offset"]    = message.offset

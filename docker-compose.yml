@@ -1,6 +1,6 @@
 
 # =============================================================================
-# Stack E1 — Streaming (Kafka + Schema Registry)
+# Stack E1 - Streaming (Kafka + Schema Registry)
 #
 # Pré-requisitos:
 #   1. Infra de storage já rodando: cd infra/docker && docker compose up -d
@@ -16,7 +16,7 @@
 services:
 
   # ---------------------------------------------------------------------------
-  # Kafka Broker + Controller (KRaft — sem Zookeeper)
+  # Kafka Broker + Controller (KRaft - sem Zookeeper)
   #
   # CLUSTER_ID: UUID fixo base64url necessário para o KRaft formatar o storage.
   # Para gerar um novo:
@@ -75,7 +75,7 @@ services:
       - kafka_data:/var/lib/kafka/data
 
   # ---------------------------------------------------------------------------
-  # Schema Registry — validação e versionamento de schemas Avro/JSON
+  # Schema Registry - validação e versionamento de schemas Avro/JSON
   # API REST: http://localhost:8081
   # ---------------------------------------------------------------------------
   schema-registry:
@@ -108,7 +108,7 @@ services:
       start_period: 30s
 
   # ---------------------------------------------------------------------------
-  # Schema Registry Init — registra o schema JSON do sensor na inicialização
+  # Schema Registry Init - registra o schema JSON do sensor na inicialização
   # ---------------------------------------------------------------------------
   schema-registry-init:
     image: curlimages/curl:latest
@@ -131,7 +131,7 @@ services:
       "
 
   # ---------------------------------------------------------------------------
-  # Kafka UI — interface web para tópicos, mensagens e schemas
+  # Kafka UI - interface web para tópicos, mensagens e schemas
   # Acesse: http://localhost:8080
   # ---------------------------------------------------------------------------
   kafka-ui:

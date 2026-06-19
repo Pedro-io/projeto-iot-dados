@@ -37,7 +37,7 @@ target-version = "py310"
 
 [tool.ruff.lint]
 select = ["E", "F", "I"]  # erros, warnings, imports
-ignore = []
+ignore = ["E501"]
 
 [tool.ruff.format]
 quote-style = "double"

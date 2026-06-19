@@ -1,4 +1,4 @@
-"""Schema local — fallback usado quando o Schema Registry está offline."""
+"""Schema local - fallback usado quando o Schema Registry está offline."""
 
 REQUIRED_FIELDS = frozenset({
     "event_id", "sensor_id", "equipment_id", "factory_id",

@@ -1,4 +1,4 @@
-## Setup — Instalação e Execução
+## Setup - Instalação e Execução
 
 Guia completo para subir o ambiente do projeto do zero.
 
@@ -135,7 +135,7 @@ cd src && poetry run python -m streaming.consumer.bronze_consumer
 # Sem Poetry
 cd src && python -m streaming.consumer.bronze_consumer
 
-# Modo dry-run (recomendado para testes — não grava no MinIO)
+# Modo dry-run (recomendado para testes - não grava no MinIO)
 cd src && python -m streaming.consumer.bronze_consumer --dry-run
 ```
 

@@ -1,18 +1,18 @@
-"""Configuração do consumer Bronze — lê do .env
+"""Configuração do consumer Bronze - lê do .env
 
 Mapeia as variáveis de ambiente para as constantes usadas no código.
-Nenhum valor hardcoded — tudo vem do .env
+Nenhum valor hardcoded - tudo vem do .env
 """
 import os
 import sys
 
 
 def _get_required_env(var_name: str) -> str:
-    """Lê variável obrigatória — falha se não existir."""
+    """Lê variável obrigatória - falha se não existir."""
     value = os.getenv(var_name)
     if value is None:
         print(f"ERRO: Variável '{var_name}' não definida no .env", file=sys.stderr)
-        print(f"Verifique se o arquivo .env existe e contém essa variável.", file=sys.stderr)
+        print("Verifique se o arquivo .env existe e contém essa variável.", file=sys.stderr)
         sys.exit(1)
     return value
 

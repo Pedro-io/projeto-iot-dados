@@ -1,5 +1,5 @@
 -- ============================================================
--- ERP LEGADO — DDL
+-- ERP LEGADO - DDL
 -- Modelo normalizado (3NF) para dados de sensores industriais
 -- ============================================================
 

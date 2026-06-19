@@ -1,9 +1,11 @@
-"""Validador de eventos — Schema Registry com fallback local."""
+"""Validador de eventos - Schema Registry com fallback local."""
 import logging
 from typing import Any, Dict, Optional, Tuple
 
 from streaming.schema.local_schema import (
-    REQUIRED_FIELDS, VALID_QUALITIES, VALID_MEASUREMENTS,
+    REQUIRED_FIELDS,
+    VALID_MEASUREMENTS,
+    VALID_QUALITIES,
 )
 from streaming.schema.schema_registry_client import SchemaRegistryClient
 
@@ -15,7 +17,7 @@ class SchemaValidator:
     Valida eventos contra o schema do Schema Registry (quando disponível)
     ou contra o schema local como fallback.
 
-    Retorna sempre uma tupla (válido, motivo) — nunca levanta exceção
+    Retorna sempre uma tupla (válido, motivo) - nunca levanta exceção
     para erros de validação, apenas para erros programáticos.
     """
 

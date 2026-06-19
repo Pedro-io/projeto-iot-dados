@@ -122,6 +122,50 @@ services:
     networks:
       - ui-net
       - data-net
+  
+  spark-master:
+    build:
+      context: ./spark
+    container_name: spark-master
+    hostname: spark-master
+    command: /opt/spark/bin/spark-class org.apache.spark.deploy.master.Master
+    environment:
+      - SPARK_MASTER_HOST=spark-master
+      - SPARK_MASTER_PORT=7077
+      - SPARK_MASTER_WEBUI_PORT=8080
+      - MINIO_ROOT_USER=${MINIO_ROOT_USER}
+      - MINIO_ROOT_PASSWORD=${MINIO_ROOT_PASSWORD}
+    ports:
+      - "7077:7077"   # endpoint para spark-submit
+      - "8085:8080"   # Spark Master UI
+    volumes:
+      - ../../src:/jobs
+    networks:
+      - data-net
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8080"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
+
+  spark-worker:
+    build:
+      context: ./spark
+    container_name: spark-worker
+    command: /opt/spark/bin/spark-class org.apache.spark.deploy.worker.Worker spark://spark-master:7077
+    environment:
+      - SPARK_WORKER_MEMORY=2G
+      - SPARK_WORKER_CORES=2
+      - MINIO_ROOT_USER=${MINIO_ROOT_USER}
+      - MINIO_ROOT_PASSWORD=${MINIO_ROOT_PASSWORD}
+    depends_on:
+      spark-master:
+        condition: service_healthy
+    volumes:
+      - ../../src:/jobs
+    networks:
+      - data-net
 
 volumes:
   mongo_data:

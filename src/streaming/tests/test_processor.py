@@ -1,4 +1,4 @@
-"""Testes de BronzeProcessor — usa fake message + validator real."""
+"""Testes de BronzeProcessor - usa fake message + validator real."""
 import unittest
 from types import SimpleNamespace
 
