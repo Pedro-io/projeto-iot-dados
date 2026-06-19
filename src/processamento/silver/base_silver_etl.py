@@ -15,7 +15,7 @@ class SilverETL(AbstractETL):
 
     @property
     def bronze_bucket(self) -> str:
-        return f"bronze-hmg" if self.environment == "hmg" else "bronze"
+        return "bronze-hmg" if self.environment == "hmg" else "bronze"
 
     def _read_bronze_parquet(self, source_path: str) -> DataFrame:
         path = f"s3a://{self.bronze_bucket}/{source_path}"

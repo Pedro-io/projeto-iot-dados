@@ -3,7 +3,13 @@ import os
 
 from pyspark.sql import SparkSession
 from pyspark.sql.functions import col
-from pyspark.sql.types import BooleanType, DoubleType, IntegerType, StringType, TimestampType
+from pyspark.sql.types import (
+    BooleanType,
+    DoubleType,
+    IntegerType,
+    StringType,
+    TimestampType,
+)
 
 from processamento.silver.base_silver_etl import SilverETL
 from utils.logger import logger
