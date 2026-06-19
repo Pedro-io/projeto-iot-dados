@@ -16,8 +16,8 @@ class BaseConsumer(ABC):
     Loop e ciclo de vida genérico de um consumer Kafka.
 
     Subclasses implementam apenas:
-      - _flush()      → como gravar o buffer no destino
-      - _flush_dlq()  → como gravar a DLQ no destino
+      - _flush()      -> como gravar o buffer no destino
+      - _flush_dlq()  -> como gravar a DLQ no destino
 
     Toda a coreografia de loop, commit manual de offset, shutdown gracioso
     e estatísticas vive aqui.

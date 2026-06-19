@@ -2,7 +2,7 @@
 
 Plataforma de integração de dados para monitoramento industrial, desenvolvida como Projeto Integrador da disciplina **Integração de Dados II (2026/1)** - PUC Minas.
 
-O sistema ingere eventos de sensores IoT em tempo real via Apache Kafka, valida os schemas via Confluent Schema Registry, persiste os dados brutos no MinIO com arquitetura **Medallion** (Bronze → Silver → Gold) e emite logs estruturados em JSON para observabilidade.
+O sistema ingere eventos de sensores IoT em tempo real via Apache Kafka, valida os schemas via Confluent Schema Registry, persiste os dados brutos no MinIO com arquitetura **Medallion** (Bronze -> Silver -> Gold) e emite logs estruturados em JSON para observabilidade.
 
 ---
 

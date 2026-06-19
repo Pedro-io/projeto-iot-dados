@@ -62,7 +62,7 @@ log = setup_logging("bronze_consumer")
 class BronzeConsumer(BaseConsumer):
     """
     Consome 'iot-sensors-raw' e persiste eventos brutos na camada Bronze
-    com particionamento Hive-style. Commit manual de offset → at-least-once.
+    com particionamento Hive-style. Commit manual de offset -> at-least-once.
     """
 
     def _build_object_key(self, partition_path: str) -> str:
@@ -138,7 +138,7 @@ def _build_storage(args: argparse.Namespace) -> StorageClient:
 
 def _parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(
-        description="Consumer Kafka → Bronze (MinIO) com Schema Registry.",
+        description="Consumer Kafka -> Bronze (MinIO) com Schema Registry.",
         formatter_class=argparse.ArgumentDefaultsHelpFormatter,
     )
     parser.add_argument("--bootstrap-servers",   default=DEFAULT_BOOTSTRAP_SERVERS)
@@ -172,7 +172,7 @@ def main() -> None:
     args = _parse_args()
     log.setLevel(getattr(logging, args.log_level.upper()))
 
-    log.info("Iniciando Consumer Kafka → Bronze", extra={
+    log.info("Iniciando Consumer Kafka -> Bronze", extra={
         "topic":               args.topic,
         "group_id":            args.group_id,
         "bootstrap_servers":   args.bootstrap_servers,

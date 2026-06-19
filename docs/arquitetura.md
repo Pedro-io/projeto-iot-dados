@@ -1,3 +1,65 @@
+# Arquitetura — Plataforma de Integração de Dados IoT
+
+## Visão Geral
+
+A plataforma implementa uma **arquitetura Medallion** (Bronze → Silver → Gold) sobre object storage compatível com S3 (MinIO), orquestrada por Apache Airflow e processada via Apache Spark com Delta Lake.
+
+```
+┌─────────────────────────────────────────────────────────────────────┐
+│                        FONTES DE DADOS                              │
+│  Sensores IoT       PostgreSQL ERP      MongoDB             API REST │
+│  (Simulador)        (erp_legado)        (equipments)        (—)     │
+└──────┬──────────────────┬───────────────────┬──────────────────┬────┘
+       │  Streaming        │  Batch JDBC        │  Batch JDBC      │ Batch
+       ▼                   ▼                   ▼                  ▼
+┌─────────────────────────────────────────────────────────────────────┐
+│                     CAMADA DE INGESTÃO                              │
+│  Apache Kafka (KRaft)           spark-submit (AbstractETL)          │
+│  consumer → NDJSON              full load / incremental             │
+└──────┬──────────────────────────────────┬───────────────────────────┘
+       │                                  │
+       ▼                                  ▼
+┌─────────────────────────────────────────────────────────────────────┐
+│              BRONZE  —  MinIO bucket: bronze                        │
+│  factory_id=*/measurement_type=*/dt=*/*.ndjson  (Kafka, append)     │
+│  postgres/{tabela}/                             (Parquet, append)   │
+│  mongo/equipamentos/                            (Parquet, append)   │
+└──────────────────────────────┬──────────────────────────────────────┘
+                               │  spark-submit (SilverETL)
+                               ▼
+┌─────────────────────────────────────────────────────────────────────┐
+│              SILVER  —  MinIO bucket: silver                        │
+│  kafka/sensor_events/        (Delta, upsert, part. measurement_type)│
+│  postgres/{7 tabelas}/       (Delta, upsert, full ou incremental)   │
+│  mongo/equipamentos/         (Delta, upsert, full load)             │
+└──────────────────────────────┬──────────────────────────────────────┘
+                               │  spark-submit (GoldETL) [planejado]
+                               ▼
+┌─────────────────────────────────────────────────────────────────────┐
+│              GOLD  —  MinIO bucket: gold  [planejado]               │
+│  fct_leituras_hora/          (Delta, agregações horárias)           │
+│  fct_anomalias_dia/          (Delta, contagem diária de anomalias)  │
+│  dim_{tempo,fabrica,equipamento,sensor,tipo_medicao}/               │
+└──────────────────────────────┬──────────────────────────────────────┘
+                               │
+                               ▼
+┌─────────────────────────────────────────────────────────────────────┐
+│                   CAMADA DE ORQUESTRAÇÃO  [planejado]               │
+│  Apache Airflow — DAGs: bronze_daily, silver_daily, gold_daily      │
+└─────────────────────────────────────────────────────────────────────┘
+```
+
+## Status de Implementação (2026-06-19)
+
+| Camada   | Status       | Tabelas                                                       |
+|----------|--------------|---------------------------------------------------------------|
+| Bronze   | ✅ Completo  | 8 Parquet (PG + Mongo) + NDJSON Kafka particionado            |
+| Silver   | ✅ Completo  | 10 Delta Tables (PG×8, Mongo×1, Kafka×1)                      |
+| Gold     | 🔲 Planejado | Star schema dimensional (ver `docs/catalogo-dados.md`)        |
+| Airflow  | 🔲 Planejado | DAGs Bronze/Silver/Gold com schedule diário                   |
+
+---
+
 # Decisões Arquiteturais
 
 Este documento centraliza os registros de decisões arquiteturais (*Architecture Decision Records* - ADRs) do projeto Plataforma de Integração de Dados IoT. Cada ADR descreve o contexto, a decisão tomada, as alternativas consideradas e as consequências resultantes.
@@ -303,3 +365,43 @@ Utilizar o **Terraform** com o provider AWS configurado para apontar ao endpoint
 ## Referências
 - Terraform AWS Provider Documentation: `aws_s3_bucket` resource.
 - MinIO Terraform Provider Compatibility Notes.
+
+---
+
+# ADR-009: Padrão de Processamento Silver com Classe Base e Delta Lake
+
+## Status
+Aceito
+
+## Contexto
+A camada Silver precisa processar dados de três origens heterogêneas (PostgreSQL via Parquet, MongoDB via Parquet e Kafka via NDJSON) aplicando limpeza, tipagem forte e deduplicação em cada tabela. Sem um padrão centralizado, cada job ETL repetiria a lógica de leitura do bucket Bronze, deduplicação e escrita Delta Lake, criando duplicação e inconsistência de comportamento entre os 10 jobs.
+
+## Decisão
+Introduzir a classe abstrata `SilverETL` (em `src/processamento/silver/base_silver_etl.py`) que estende `AbstractETL`. Ela encapsula três responsabilidades transversais: (1) resolução dinâmica do bucket de origem Bronze segundo o ambiente (`bronze` em prd, `bronze-hmg` em hmg), (2) métodos de leitura tipados `_read_bronze_parquet()` e `_read_bronze_ndjson()` que constroem o path S3A completo, e (3) `_deduplicate(keys)` com log de registros removidos.
+
+Cada um dos 10 ETLs Silver herda de `SilverETL` e implementa apenas `extract()`, `transform()`, `load()` e `unit_tests()`, seguindo o Template Method definido em `AbstractETL.run()`.
+
+A escrita Silver usa exclusivamente `upsert_delta_table()` com `previous_delete=False`, garantindo que histórico de partições anteriores seja preservado e apenas atualizações e inserções sejam aplicadas via Delta Merge.
+
+## Alternativas Consideradas
+
+1. **Jobs Silver independentes sem classe base**: Cada job autossuficiente com sua própria lógica de leitura e escrita. Elimina a dependência de herança mas duplica ~40 linhas de código de infraestrutura em cada um dos 10 jobs, dificultando mudanças transversais (ex: alterar o nome do bucket Bronze).
+2. **Configuração por injeção de dependência (Composition over Inheritance)**: Passar um objeto `BronzeReader` para cada job em vez de herdar. Mais flexível para testes unitários. Aumenta a verbosidade da instanciação e exige documentação adicional do contrato de interface, overhead não justificado para o volume atual de jobs.
+3. **Delta Live Tables (DLT)**: Framework Databricks nativo para pipelines Medallion com checagem de qualidade integrada. Requer Databricks Runtime, incompatível com o ambiente local Spark Standalone sobre Docker.
+
+## Consequências
+
+### Positivas
+- Mudanças no padrão de leitura Bronze ou na lógica de deduplicação propagam para todos os 10 jobs Silver sem alteração individual.
+- O histórico de cada tabela Silver é preservado por `previous_delete=False`; reprocessamentos da mesma `_execution_date` apenas atualizam registros existentes via Merge.
+- A validação PyDeequ herdada de `AbstractETL` é executada automaticamente antes de cada escrita Silver, sem configuração adicional por job.
+
+### Negativas
+- Herança profunda (`AbstractETL` → `SilverETL` → `FabricasETL`) dificulta o rastreamento do fluxo de execução sem leitura da classe base.
+- `_deduplicate()` opera sobre `self.df` com efeito colateral (mutação de estado), o que dificulta testes unitários isolados de `transform()`.
+- O comportamento de abort silencioso de `AbstractETL.run()` quando o DataFrame está vazio após `transform()` (log WARNING + retorno sem exceção) pode mascarar falhas de extração; requer monitoramento ativo dos logs loguru.
+
+## Referências
+- Delta Lake Merge Documentation: `whenMatchedUpdateAll` / `whenNotMatchedInsertAll`.
+- Template Method Pattern — Gang of Four Design Patterns.
+- PyDeequ: Data Quality Verification on Apache Spark.

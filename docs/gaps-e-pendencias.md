@@ -10,7 +10,7 @@
 | Componente | Localização | Status |
 |---|---|---|
 | Simulador de sensores IoT | `src/ingestao/sensor_simulator.py` | ✅ |
-| Consumer Bronze (Kafka → MinIO) | `src/streaming/consumer/` | ✅ |
+| Consumer Bronze (Kafka -> MinIO) | `src/streaming/consumer/` | ✅ |
 | Buffer particionado Hive-style | `src/streaming/buffer/` | ✅ |
 | Validação de schema (Registry + fallback local) | `src/streaming/schema/` + `validation/` | ✅ |
 | Dead-letter queue (DLQ) | `bronze_consumer.py` | ✅ |
@@ -36,7 +36,7 @@ A camada Silver é o próximo passo crítico da arquitetura Medallion. Os dados 
 |---|---|
 | Consumer/Job Silver | Lê arquivos `.ndjson` da partição Bronze e aplica transformações |
 | Deduplicação | Remove eventos com mesmo `event_id` (at-least-once pode gerar duplicatas no Kafka) |
-| Tipagem e cast | Converte campos para tipos corretos (e.g., `timestamp` → datetime, `value` → float) |
+| Tipagem e cast | Converte campos para tipos corretos (e.g., `timestamp` -> datetime, `value` -> float) |
 | Enriquecimento com MongoDB | Consulta cadastro de equipamentos para adicionar `equipment_name`, `factory_name`, faixa de operação do sensor |
 | Detecção de anomalias baseada em range | Usa `sensors.range` do MongoDB para sinalizar leituras fora do normal (hoje `is_anomaly` vem do simulador, não calculado) |
 | Escrita no Silver | Grava em `silver/` no MinIO em formato Parquet ou NDJSON particionado |

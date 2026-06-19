@@ -25,7 +25,7 @@ def _valid_event(**overrides):
 class TestSchemaValidator(unittest.TestCase):
 
     def setUp(self):
-        # registry=None → fallback total para schema local
+        # registry=None -> fallback total para schema local
         self.validator = SchemaValidator(registry_client=None)
 
     def test_valid_event(self):

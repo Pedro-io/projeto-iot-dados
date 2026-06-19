@@ -145,9 +145,9 @@ cd src && python -m streaming.consumer.bronze_consumer --dry-run
 
 | Interface | URL | O que verificar |
 |---|---|---|
-| Kafka UI | http://localhost:8080 | Topics → iot-sensors-raw → Messages |
+| Kafka UI | http://localhost:8080 | Topics -> iot-sensors-raw -> Messages |
 | Schema Registry | http://localhost:8081/subjects | Schema registrado |
-| MinIO Console | http://localhost:9001 | Bucket `bronze` → pastas `factory_id=...` |
+| MinIO Console | http://localhost:9001 | Bucket `bronze` -> pastas `factory_id=...` |
 | Mongo Express | http://localhost:8083 | Coleção `equipments` (requer infra/docker stack) |
 
 ---
