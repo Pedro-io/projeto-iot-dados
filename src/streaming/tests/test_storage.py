@@ -11,7 +11,7 @@ class TestDryRunClient(unittest.TestCase):
         self.client = DryRunClient()
 
     def test_implements_storage_protocol(self):
-        # Protocol runtime_checkable → isinstance verifica métodos do contrato
+        # Protocol runtime_checkable -> isinstance verifica métodos do contrato
         self.assertIsInstance(self.client, StorageClient)
 
     def test_put_json_returns_byte_count(self):

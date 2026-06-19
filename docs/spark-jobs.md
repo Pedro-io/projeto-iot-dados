@@ -58,8 +58,8 @@ As variáveis `-e` são obrigatórias:
 O diretório `src/` do projeto é montado em `/jobs` dentro dos containers. Então o mapeamento é:
 
 ```
-src/processamento/meu_script.py  →  /jobs/processamento/meu_script.py
-src/silver/processar_sensores.py →  /jobs/silver/processar_sensores.py
+src/processamento/meu_script.py  ->  /jobs/processamento/meu_script.py
+src/silver/processar_sensores.py ->  /jobs/silver/processar_sensores.py
 ```
 
 ---
