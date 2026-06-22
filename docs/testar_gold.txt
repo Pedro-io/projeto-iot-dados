@@ -1,0 +1,193 @@
+========================================
+ TESTES — ETLs Camada Gold
+========================================
+
+PRÉ-REQUISITOS
+--------------
+1. Stack Docker rodando:
+   cd infra/docker && docker compose --env-file ../../.env up -d
+
+2. Silver populada — rode os ETLs da silver primeiro (docs/testar_silver.txt).
+   A gold lê os Delta tables do bucket silver; sem silver não há dados.
+
+3. Para as facts (fct_leituras_hora, fct_anomalias_dia) o ETL da silver
+   kafka/sensor_events deve ter gerado dados com a data de execução abaixo.
+
+4. Verificar worker registrado:
+   http://localhost:8085  (Spark Master UI)
+
+
+VARIÁVEIS DE REFERÊNCIA (não são comandos, só para leitura)
+-----------------------------------------------------------
+EXEC_DATE = 2026-06-22
+ENV       = prd
+OWNER     = pedro
+
+
+FORMATO DOS COMANDOS
+--------------------
+Todos usam --master local[*] (modo desenvolvimento).
+Não há parâmetros de conexão: a gold lê direto do bucket silver via S3A.
+
+
+========================================
+ DIMENSÕES
+========================================
+
+--- 1. Dim Equipamento ---
+Faz join entre silver/postgres/equipamentos, silver/postgres/tipos_equipamento
+e silver/mongo/equipamentos para montar a dimensão mestre de equipamentos (SCD Type 1).
+Grava Delta em gold/dim/dim_equipamento.
+
+docker exec \
+  -e MINIO_ROOT_USER=1234 \
+  -e MINIO_ROOT_PASSWORD=12345678 \
+  -e PYTHONPATH=/jobs \
+  spark-master \
+  /opt/spark/bin/spark-submit \
+    --master local[*] \
+    /jobs/processamento/gold/dimensions/dim_equipamento.py \
+    --execution_date 2026-06-22 \
+    --environment prd \
+    --owner pedro
+
+
+--- 2. Dim Fábrica ---
+Carrega silver/postgres/fabricas com coordenadas geográficas (SCD Type 1).
+Grava Delta em gold/dim/dim_fabrica.
+
+docker exec \
+  -e MINIO_ROOT_USER=1234 \
+  -e MINIO_ROOT_PASSWORD=12345678 \
+  -e PYTHONPATH=/jobs \
+  spark-master \
+  /opt/spark/bin/spark-submit \
+    --master local[*] \
+    /jobs/processamento/gold/dimensions/dim_fabrica.py \
+    --execution_date 2026-06-22 \
+    --environment prd \
+    --owner pedro
+
+
+--- 3. Dim Sensor ---
+Carrega silver/postgres/sensores com referências a equipamento e tipo de medição (SCD Type 1).
+Grava Delta em gold/dim/dim_sensor.
+
+docker exec \
+  -e MINIO_ROOT_USER=1234 \
+  -e MINIO_ROOT_PASSWORD=12345678 \
+  -e PYTHONPATH=/jobs \
+  spark-master \
+  /opt/spark/bin/spark-submit \
+    --master local[*] \
+    /jobs/processamento/gold/dimensions/dim_sensor.py \
+    --execution_date 2026-06-22 \
+    --environment prd \
+    --owner pedro
+
+
+--- 4. Dim Tempo ---
+Gera 24 registros horários para a data de execução com atributos de calendário
+(dia da semana, semana do ano, mês, trimestre, etc.).
+Grava Delta em gold/dim/dim_tempo.
+
+docker exec \
+  -e MINIO_ROOT_USER=1234 \
+  -e MINIO_ROOT_PASSWORD=12345678 \
+  -e PYTHONPATH=/jobs \
+  spark-master \
+  /opt/spark/bin/spark-submit \
+    --master local[*] \
+    /jobs/processamento/gold/dimensions/dim_tempo.py \
+    --execution_date 2026-06-22 \
+    --environment prd \
+    --owner pedro
+
+
+--- 5. Dim Tipo de Medição ---
+Carrega silver/postgres/tipos_medicao preservando limites físicos e faixas operacionais
+usados na detecção de anomalias.
+Grava Delta em gold/dim/dim_tipo_medicao.
+
+docker exec \
+  -e MINIO_ROOT_USER=1234 \
+  -e MINIO_ROOT_PASSWORD=12345678 \
+  -e PYTHONPATH=/jobs \
+  spark-master \
+  /opt/spark/bin/spark-submit \
+    --master local[*] \
+    /jobs/processamento/gold/dimensions/dim_tipo_medicao.py \
+    --execution_date 2026-06-22 \
+    --environment prd \
+    --owner pedro
+
+
+========================================
+ FATOS
+========================================
+
+--- 6. Fct Leituras por Hora ---
+Agrega silver/kafka/sensor_events por hora e por sensor calculando métricas
+estatísticas (avg, min, max, stddev), contagem de anomalias e percentual de
+leituras de boa qualidade. Faz join com tipos_medicao para resolver IDs.
+Grava Delta em gold/fct/fct_leituras_hora.
+
+PRÉ-REQUISITO: silver/kafka/sensor_events deve ter dados com _execution_date=2026-06-22.
+
+docker exec \
+  -e MINIO_ROOT_USER=1234 \
+  -e MINIO_ROOT_PASSWORD=12345678 \
+  -e PYTHONPATH=/jobs \
+  spark-master \
+  /opt/spark/bin/spark-submit \
+    --master local[*] \
+    /jobs/processamento/gold/facts/fct_leituras_hora.py \
+    --execution_date 2026-06-22 \
+    --environment prd \
+    --owner pedro
+
+
+--- 7. Fct Anomalias por Dia ---
+Agrega silver/kafka/sensor_events por dia e por sensor calculando total de leituras,
+total de anomalias e taxa de anomalia. Suporta alertas (Req. 2) e relatório diário (Req. 3).
+Grava Delta em gold/fct/fct_anomalias_dia.
+
+PRÉ-REQUISITO: silver/kafka/sensor_events deve ter dados com _execution_date=2026-06-22.
+
+docker exec \
+  -e MINIO_ROOT_USER=1234 \
+  -e MINIO_ROOT_PASSWORD=12345678 \
+  -e PYTHONPATH=/jobs \
+  spark-master \
+  /opt/spark/bin/spark-submit \
+    --master local[*] \
+    /jobs/processamento/gold/facts/fct_anomalias_dia.py \
+    --execution_date 2026-06-22 \
+    --environment prd \
+    --owner pedro
+
+
+========================================
+ VERIFICAR RESULTADO NO MINIO
+========================================
+Acesse http://localhost:9001 (usuário: 1234, senha: 12345678)
+e confira o bucket gold com a estrutura:
+
+  gold/
+  ├── dim/
+  │   ├── dim_equipamento/          <- Delta table (_delta_log/ + parquet)
+  │   ├── dim_fabrica/
+  │   ├── dim_sensor/
+  │   ├── dim_tempo/
+  │   └── dim_tipo_medicao/
+  └── fct/
+      ├── fct_leituras_hora/        <- Delta table
+      └── fct_anomalias_dia/        <- Delta table
+
+
+========================================
+ REBUILD DA IMAGEM (se o Dockerfile mudou)
+========================================
+cd infra/docker
+docker compose build spark-master spark-worker
+docker compose --env-file ../../.env up -d spark-master spark-worker
