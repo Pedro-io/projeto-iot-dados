@@ -22,7 +22,7 @@ O worker aparece na seção "Workers" com status `ALIVE` alguns segundos após s
 
 ### Criar os buckets no MinIO (apenas na primeira vez)
 
-Os jobs Bronze gravam em `s3a://bronze-hmg/`. O bucket precisa existir antes do primeiro job — o Spark não cria automaticamente:
+Os jobs Bronze gravam em `s3a://bronze-hmg/`. O bucket precisa existir antes do primeiro job - o Spark não cria automaticamente:
 
 ```bash
 docker exec minio mc alias set local http://localhost:9000 $MINIO_ROOT_USER $MINIO_ROOT_PASSWORD --quiet
@@ -190,8 +190,8 @@ docker compose --env-file .env -f infra/docker/docker-compose.yml up -d spark-ma
 ## Observações
 
 * Os containers Spark precisam estar na rede `data-net` para alcançar o MinIO
-* As credenciais MinIO são passadas como variáveis de ambiente — nunca hardcode no script
+* As credenciais MinIO são passadas como variáveis de ambiente - nunca hardcode no script
 * O `spark-defaults.conf` configura S3A globalmente; as credenciais ficam no job via `os.getenv()`
 * A UI do master (`http://localhost:8085`) mostra jobs em execução, workers registrados e histórico de aplicações
-* Use sempre `s3a://` nos paths — o scheme `s3://` não é reconhecido pelo Hadoop S3A e causa `UnsupportedFileSystemException`
+* Use sempre `s3a://` nos paths - o scheme `s3://` não é reconhecido pelo Hadoop S3A e causa `UnsupportedFileSystemException`
 * A imagem Spark usa **Python 3.11** (multi-stage build sobre `apache/spark:3.5.3`); a versão oficial `python3` da imagem base é 3.8 e não é compatível com a sintaxe de type hints do projeto

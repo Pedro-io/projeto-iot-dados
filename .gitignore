@@ -23,3 +23,8 @@ build/
 .vscode/
 .idea/
 *.swp
+
+#Airflow
+airflow.cfg
+*.airflow/config/*
+infra/airflow/logs/

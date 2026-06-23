@@ -34,6 +34,12 @@ Copie o template e preencha com suas credenciais:
 cp .env.template .env
 ```
 
+Gere o `FERNET_KEY` obrigatório para o Airflow (funciona no Linux, Mac e Windows):
+
+```bash
+python -c "import base64, os; print(base64.urlsafe_b64encode(os.urandom(32)).decode())"
+```
+
 Edite `.env` com seus valores:
 
 ```bash
@@ -95,6 +101,7 @@ Esse script automaticamente:
 2. ✅ Lê credenciais do `.env`
 3. ✅ Provisiona buckets no MinIO via Terraform (`bronze`, `silver`, `gold`)
 4. ✅ Sobe Kafka + Schema Registry
+5. ✅ Inicializa e sobe o Airflow (api-server, scheduler, worker)
 
 ---
 
@@ -145,10 +152,11 @@ cd src && python -m streaming.consumer.bronze_consumer --dry-run
 
 | Interface | URL | O que verificar |
 |---|---|---|
-| Kafka UI | http://localhost:8080 | Topics -> iot-sensors-raw -> Messages |
+| Kafka UI | http://localhost:8088 | Topics -> iot-sensors-raw -> Messages |
 | Schema Registry | http://localhost:8081/subjects | Schema registrado |
 | MinIO Console | http://localhost:9001 | Bucket `bronze` -> pastas `factory_id=...` |
 | Mongo Express | http://localhost:8083 | Coleção `equipments` (requer infra/docker stack) |
+| Airflow | http://localhost:8080 | DAGs -> estado das execuções |
 
 ---
 
@@ -210,7 +218,8 @@ cd ../..
 
 | O que derrubar | Comando |
 |---|---|
-| Só streaming | `docker compose down -v` |
+| Só streaming (Kafka) | `docker compose down -v` |
 | Só storage | `docker compose -f infra/docker/docker-compose.yml --env-file .env down -v` |
-| Tudo | Os dois comandos acima, nessa ordem |
+| Só Airflow | `docker compose -f infra/airflow/docker-compose.yaml --env-file .env down -v` |
+| Tudo (recomendado) | `./scripts/stop-all.sh` |
 | Buckets MinIO (Terraform) | `cd infra/terraform && terraform destroy -auto-approve` |

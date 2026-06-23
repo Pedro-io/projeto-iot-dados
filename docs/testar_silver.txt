@@ -1,5 +1,5 @@
 ========================================
- TESTES — ETLs Camada Silver
+ TESTES - ETLs Camada Silver
 ========================================
 
 PRÉ-REQUISITOS
@@ -7,7 +7,7 @@ PRÉ-REQUISITOS
 1. Stack Docker rodando:
    cd infra/docker && docker compose --env-file ../../.env up -d
 
-2. Bronze populada — rode os ETLs da bronze primeiro (docs/testar_bronze.txt).
+2. Bronze populada - rode os ETLs da bronze primeiro (docs/testar_bronze.txt).
    A silver lê os Parquet/NDJSON do bucket bronze; sem bronze não há dados.
 
 3. Para o teste de sensor_events (Kafka), o consumer bronze deve ter gravado
@@ -52,7 +52,7 @@ docker exec \
 
 
 ========================================
- POSTGRESQL — TABELAS DE DOMÍNIO
+ POSTGRESQL - TABELAS DE DOMÍNIO
 ========================================
 
 --- 2. Tipos de Equipamento ---
@@ -105,7 +105,7 @@ docker exec \
 
 
 ========================================
- POSTGRESQL — TABELAS MESTRE
+ POSTGRESQL - TABELAS MESTRE
 ========================================
 
 --- 5. Fábricas ---
@@ -157,7 +157,7 @@ docker exec \
 
 
 ========================================
- POSTGRESQL — TABELAS TRANSACIONAIS
+ POSTGRESQL - TABELAS TRANSACIONAIS
 ========================================
 
 --- 8. Leituras ---
