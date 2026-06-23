@@ -1,5 +1,5 @@
 ========================================
- TESTES — ETLs Camada Gold
+ TESTES - ETLs Camada Gold
 ========================================
 
 PRÉ-REQUISITOS
@@ -7,7 +7,7 @@ PRÉ-REQUISITOS
 1. Stack Docker rodando:
    cd infra/docker && docker compose --env-file ../../.env up -d
 
-2. Silver populada — rode os ETLs da silver primeiro (docs/testar_silver.txt).
+2. Silver populada - rode os ETLs da silver primeiro (docs/testar_silver.txt).
    A gold lê os Delta tables do bucket silver; sem silver não há dados.
 
 3. Para as facts (fct_leituras_hora, fct_anomalias_dia) o ETL da silver

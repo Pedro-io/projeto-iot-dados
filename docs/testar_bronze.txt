@@ -1,5 +1,5 @@
 ========================================
- TESTES — ETLs Camada Bronze
+ TESTES - ETLs Camada Bronze
 ========================================
 
 PRÉ-REQUISITOS
@@ -11,7 +11,7 @@ PRÉ-REQUISITOS
    http://localhost:8085  (Spark Master UI)
 
 3. Os scripts usam PYTHONPATH=/jobs (src/ montado em /jobs no container).
-   Nenhuma configuração extra necessária — os imports já estão corretos.
+   Nenhuma configuração extra necessária - os imports já estão corretos.
 
 
 VARIÁVEIS DE REFERÊNCIA (não são comandos, só para leitura)
@@ -55,7 +55,7 @@ docker exec \
 
 
 ========================================
- POSTGRESQL — TABELAS DE DOMÍNIO
+ POSTGRESQL - TABELAS DE DOMÍNIO
 ========================================
 
 --- 2. Tipos de Equipamento ---
@@ -116,7 +116,7 @@ docker exec \
 
 
 ========================================
- POSTGRESQL — TABELAS MESTRE
+ POSTGRESQL - TABELAS MESTRE
 ========================================
 
 --- 5. Fábricas ---
@@ -177,7 +177,7 @@ docker exec \
 
 
 ========================================
- POSTGRESQL — TABELAS TRANSACIONAIS
+ POSTGRESQL - TABELAS TRANSACIONAIS
 ========================================
 
 --- 8. Leituras ---

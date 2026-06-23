@@ -1,4 +1,4 @@
-# Arquitetura — Plataforma de Integração de Dados IoT
+# Arquitetura - Plataforma de Integração de Dados IoT
 
 ## Visão Geral
 
@@ -8,7 +8,7 @@ A plataforma implementa uma **arquitetura Medallion** (Bronze → Silver → Gol
 ┌─────────────────────────────────────────────────────────────────────┐
 │                        FONTES DE DADOS                              │
 │  Sensores IoT       PostgreSQL ERP      MongoDB             API REST │
-│  (Simulador)        (erp_legado)        (equipments)        (—)     │
+│  (Simulador)        (erp_legado)        (equipments)        (-)     │
 └──────┬──────────────────┬───────────────────┬──────────────────┬────┘
        │  Streaming        │  Batch JDBC        │  Batch JDBC      │ Batch
        ▼                   ▼                   ▼                  ▼
@@ -20,7 +20,7 @@ A plataforma implementa uma **arquitetura Medallion** (Bronze → Silver → Gol
        │                                  │
        ▼                                  ▼
 ┌─────────────────────────────────────────────────────────────────────┐
-│              BRONZE  —  MinIO bucket: bronze                        │
+│              BRONZE  -  MinIO bucket: bronze                        │
 │  factory_id=*/measurement_type=*/dt=*/*.ndjson  (Kafka, append)     │
 │  postgres/{tabela}/                             (Parquet, append)   │
 │  mongo/equipamentos/                            (Parquet, append)   │
@@ -28,7 +28,7 @@ A plataforma implementa uma **arquitetura Medallion** (Bronze → Silver → Gol
                                │  spark-submit (SilverETL)
                                ▼
 ┌─────────────────────────────────────────────────────────────────────┐
-│              SILVER  —  MinIO bucket: silver                        │
+│              SILVER  -  MinIO bucket: silver                        │
 │  kafka/sensor_events/        (Delta, upsert, part. measurement_type)│
 │  postgres/{7 tabelas}/       (Delta, upsert, full ou incremental)   │
 │  mongo/equipamentos/         (Delta, upsert, full load)             │
@@ -36,7 +36,7 @@ A plataforma implementa uma **arquitetura Medallion** (Bronze → Silver → Gol
                                │  spark-submit (GoldETL) [planejado]
                                ▼
 ┌─────────────────────────────────────────────────────────────────────┐
-│              GOLD  —  MinIO bucket: gold  [planejado]               │
+│              GOLD  -  MinIO bucket: gold  [planejado]               │
 │  fct_leituras_hora/          (Delta, agregações horárias)           │
 │  fct_anomalias_dia/          (Delta, contagem diária de anomalias)  │
 │  dim_{tempo,fabrica,equipamento,sensor,tipo_medicao}/               │
@@ -45,7 +45,7 @@ A plataforma implementa uma **arquitetura Medallion** (Bronze → Silver → Gol
                                ▼
 ┌─────────────────────────────────────────────────────────────────────┐
 │                   CAMADA DE ORQUESTRAÇÃO  [planejado]               │
-│  Apache Airflow — DAGs: bronze_daily, silver_daily, gold_daily      │
+│  Apache Airflow - DAGs: bronze_daily, silver_daily, gold_daily      │
 └─────────────────────────────────────────────────────────────────────┘
 ```
 
@@ -403,5 +403,5 @@ A escrita Silver usa exclusivamente `upsert_delta_table()` com `previous_delete=
 
 ## Referências
 - Delta Lake Merge Documentation: `whenMatchedUpdateAll` / `whenNotMatchedInsertAll`.
-- Template Method Pattern — Gang of Four Design Patterns.
+- Template Method Pattern - Gang of Four Design Patterns.
 - PyDeequ: Data Quality Verification on Apache Spark.

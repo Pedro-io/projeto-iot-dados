@@ -32,10 +32,16 @@ cd "$ROOT"
 echo "==> Subindo Kafka + Schema Registry + Kafka UI..."
 docker compose up -d
 
+echo "==> Inicializando banco de dados do Airflow..."
+docker compose --env-file .env -f infra/airflow/docker-compose.yaml up airflow-init --wait
+echo "==> Subindo Airflow (scheduler, worker, api-server)..."
+docker compose --env-file .env -f infra/airflow/docker-compose.yaml up -d
+
 echo ""
 echo "Stack no ar:"
-echo "  Grafana      -> http://localhost:3001  (admin/admin)"
+echo "  Grafana      -> http://localhost:3001  (admin / 12345678)"
 echo "  MinIO        -> http://localhost:9001"
-echo "  Kafka UI     -> http://localhost:8080"
+echo "  Kafka UI     -> http://localhost:8088"
 echo "  Mongo Express-> http://localhost:8083"
 echo "  Adminer      -> http://localhost:8082"
+echo "  Airflow      -> http://localhost:8080  (airflow / airflow)"

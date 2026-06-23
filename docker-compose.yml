@@ -1,5 +1,5 @@
 
-# =============================================================================
+
 # Stack E1 - Streaming (Kafka + Schema Registry)
 #
 # Pré-requisitos:
@@ -11,17 +11,17 @@
 #   docker compose ps
 #   docker compose logs -f kafka
 #   docker compose down -v
-# =============================================================================
+
 
 services:
 
-  # ---------------------------------------------------------------------------
+  
   # Kafka Broker + Controller (KRaft - sem Zookeeper)
   #
   # CLUSTER_ID: UUID fixo base64url necessário para o KRaft formatar o storage.
   # Para gerar um novo:
   #   docker run --rm confluentinc/cp-kafka:7.5.3 kafka-storage random-uuid
-  # ---------------------------------------------------------------------------
+  
   kafka:
     image: confluentinc/cp-kafka:7.5.3
     container_name: kafka
@@ -74,10 +74,10 @@ services:
     volumes:
       - kafka_data:/var/lib/kafka/data
 
-  # ---------------------------------------------------------------------------
+  
   # Schema Registry - validação e versionamento de schemas Avro/JSON
   # API REST: http://localhost:8081
-  # ---------------------------------------------------------------------------
+  
   schema-registry:
     image: confluentinc/cp-schema-registry:7.5.3
     container_name: schema-registry
@@ -107,9 +107,9 @@ services:
       retries: 10
       start_period: 30s
 
-  # ---------------------------------------------------------------------------
+  
   # Schema Registry Init - registra o schema JSON do sensor na inicialização
-  # ---------------------------------------------------------------------------
+  
   schema-registry-init:
     image: curlimages/curl:latest
     container_name: schema-registry-init
@@ -130,10 +130,10 @@ services:
         exit 0;
       "
 
-  # ---------------------------------------------------------------------------
+  
   # Kafka UI - interface web para tópicos, mensagens e schemas
-  # Acesse: http://localhost:8080
-  # ---------------------------------------------------------------------------
+  # Acesse: http://localhost:8088
+  
   kafka-ui:
     image: provectuslabs/kafka-ui:latest
     container_name: kafka-ui
@@ -141,7 +141,7 @@ services:
     depends_on:
       - kafka
     ports:
-      - "8080:8080"
+      - "8088:8080"
     environment:
       KAFKA_CLUSTERS_0_NAME: iot-local
       KAFKA_CLUSTERS_0_BOOTSTRAPSERVERS: kafka:29092

@@ -1,4 +1,4 @@
-# Catálogo de Dados — Plataforma IoT Lakehouse
+# Catálogo de Dados - Plataforma IoT Lakehouse
 
 **Última atualização:** 2026-06-19  
 **Owner:** pedro.rodrigues@bdtech.ai  
@@ -30,7 +30,7 @@
    - [silver/postgres/status_qualidade](#28-silverpostgresstatus_qualidade)
    - [silver/mongo/equipamentos](#29-silvermongoquipamentos)
    - [silver/kafka/sensor_events](#210-silverkafkasensor_events)
-3. [Camada Gold — Modelagem Dimensional Proposta](#3-camada-gold--modelagem-dimensional-proposta)
+3. [Camada Gold - Modelagem Dimensional Proposta](#3-camada-gold--modelagem-dimensional-proposta)
    - [Star Schema](#31-star-schema)
    - [dim_tempo](#32-dim_tempo)
    - [dim_fabrica](#33-dim_fabrica)
@@ -47,7 +47,7 @@
 ## 1. Camada Bronze
 
 **Formato:** Parquet (PostgreSQL e MongoDB) · NDJSON (Kafka)  
-**Modo de escrita:** `append` — dados brutos imutáveis, nunca sobrescritos  
+**Modo de escrita:** `append` - dados brutos imutáveis, nunca sobrescritos  
 **Localização:** `s3a://bronze/{source}/{table}/`
 
 ### 1.1 bronze/postgres/fabricas
@@ -62,9 +62,9 @@
 | `nome`           | StringType    | TEXT             | Nome da fábrica                         | Sim         |
 | `latitude`       | DoubleType    | NUMERIC(9,6)     | Latitude geográfica                     | Sim         |
 | `longitude`      | DoubleType    | NUMERIC(9,6)     | Longitude geográfica                    | Sim         |
-| `_execution_date`| DateType      | —                | Data de execução do job                 | Sim         |
-| `_processed_at`  | TimestampType | —                | Timestamp de processamento              | Sim         |
-| `_data_source`   | StringType    | —                | Valor fixo: `"postgres"`               | Sim         |
+| `_execution_date`| DateType      | -                | Data de execução do job                 | Sim         |
+| `_processed_at`  | TimestampType | -                | Timestamp de processamento              | Sim         |
+| `_data_source`   | StringType    | -                | Valor fixo: `"postgres"`               | Sim         |
 
 ---
 
@@ -82,9 +82,9 @@
 | `fabrica_id`         | StringType    | VARCHAR(20)      | FK → fabricas.id                                   | Sim         |
 | `status`             | StringType    | VARCHAR(20)      | Status: `ativo`, `inativo`, `manutencao`           | Sim         |
 | `data_instalacao`    | DateType      | DATE             | Data de instalação do equipamento                  | Não         |
-| `_execution_date`    | DateType      | —                | Data de execução do job                            | Sim         |
-| `_processed_at`      | TimestampType | —                | Timestamp de processamento                         | Sim         |
-| `_data_source`       | StringType    | —                | Valor fixo: `"postgres"`                          | Sim         |
+| `_execution_date`    | DateType      | -                | Data de execução do job                            | Sim         |
+| `_processed_at`      | TimestampType | -                | Timestamp de processamento                         | Sim         |
+| `_data_source`       | StringType    | -                | Valor fixo: `"postgres"`                          | Sim         |
 
 ---
 
@@ -98,9 +98,9 @@
 |------------------|---------------|-----------------|----------------------------------|-------------|
 | `id`             | IntegerType   | SERIAL          | PK da tabela de tipos            | Sim         |
 | `nome`           | StringType    | TEXT            | Nome do tipo (ex: "compressor")  | Sim         |
-| `_execution_date`| DateType      | —               | Data de execução do job          | Sim         |
-| `_processed_at`  | TimestampType | —               | Timestamp de processamento       | Sim         |
-| `_data_source`   | StringType    | —               | Valor fixo: `"postgres"`        | Sim         |
+| `_execution_date`| DateType      | -               | Data de execução do job          | Sim         |
+| `_processed_at`  | TimestampType | -               | Timestamp de processamento       | Sim         |
+| `_data_source`   | StringType    | -               | Valor fixo: `"postgres"`        | Sim         |
 
 ---
 
@@ -117,9 +117,9 @@
 | `tipo_medicao_id` | IntegerType   | INTEGER         | FK → tipos_medicao.id                               | Sim         |
 | `status`          | StringType    | VARCHAR(20)     | Status: `ativo`, `inativo`, `manutencao`            | Sim         |
 | `data_instalacao` | DateType      | DATE            | Data de instalação do sensor                        | Não         |
-| `_execution_date` | DateType      | —               | Data de execução do job                             | Sim         |
-| `_processed_at`   | TimestampType | —               | Timestamp de processamento                          | Sim         |
-| `_data_source`    | StringType    | —               | Valor fixo: `"postgres"`                           | Sim         |
+| `_execution_date` | DateType      | -               | Data de execução do job                             | Sim         |
+| `_processed_at`   | TimestampType | -               | Timestamp de processamento                          | Sim         |
+| `_data_source`    | StringType    | -               | Valor fixo: `"postgres"`                           | Sim         |
 
 ---
 
@@ -138,9 +138,9 @@
 | `valor_maximo`     | DoubleType    | NUMERIC         | Limite físico máximo do sensor        | Sim         |
 | `faixa_normal_min` | DoubleType    | NUMERIC         | Início da faixa operacional normal    | Sim         |
 | `faixa_normal_max` | DoubleType    | NUMERIC         | Fim da faixa operacional normal       | Sim         |
-| `_execution_date`  | DateType      | —               | Data de execução do job               | Sim         |
-| `_processed_at`    | TimestampType | —               | Timestamp de processamento            | Sim         |
-| `_data_source`     | StringType    | —               | Valor fixo: `"postgres"`             | Sim         |
+| `_execution_date`  | DateType      | -               | Data de execução do job               | Sim         |
+| `_processed_at`    | TimestampType | -               | Timestamp de processamento            | Sim         |
+| `_data_source`     | StringType    | -               | Valor fixo: `"postgres"`             | Sim         |
 
 ---
 
@@ -159,9 +159,9 @@
 | `status_qualidade_id`| IntegerType   | INTEGER          | FK → status_qualidade.id                       | Sim         |
 | `timestamp_leitura`  | TimestampType | TIMESTAMPTZ      | Momento da leitura (UTC)                       | Sim         |
 | `is_anomalia`        | BooleanType   | BOOLEAN          | Indica leitura fora do range esperado          | Não         |
-| `_execution_date`    | DateType      | —                | Partição da data de execução                   | Sim         |
-| `_processed_at`      | TimestampType | —                | Timestamp de processamento                     | Sim         |
-| `_data_source`       | StringType    | —                | Valor fixo: `"postgres"`                      | Sim         |
+| `_execution_date`    | DateType      | -                | Partição da data de execução                   | Sim         |
+| `_processed_at`      | TimestampType | -                | Timestamp de processamento                     | Sim         |
+| `_data_source`       | StringType    | -                | Valor fixo: `"postgres"`                      | Sim         |
 
 ---
 
@@ -178,9 +178,9 @@
 | `versao_firmware` | StringType    | TEXT            | Versão do firmware do sensor no momento     | Não         |
 | `nivel_bateria`   | IntegerType   | SMALLINT        | Nível de bateria em % (0–100)               | Não         |
 | `forca_sinal_dbm` | IntegerType   | SMALLINT        | Força do sinal em dBm (negativo)            | Não         |
-| `_execution_date` | DateType      | —               | Partição da data de execução                | Sim         |
-| `_processed_at`   | TimestampType | —               | Timestamp de processamento                  | Sim         |
-| `_data_source`    | StringType    | —               | Valor fixo: `"postgres"`                   | Sim         |
+| `_execution_date` | DateType      | -               | Partição da data de execução                | Sim         |
+| `_processed_at`   | TimestampType | -               | Timestamp de processamento                  | Sim         |
+| `_data_source`    | StringType    | -               | Valor fixo: `"postgres"`                   | Sim         |
 
 ---
 
@@ -194,9 +194,9 @@
 |------------------|---------------|-----------------|------------------------------------|-------------|
 | `id`             | IntegerType   | SERIAL          | PK                                 | Sim         |
 | `nome`           | StringType    | TEXT            | Ex: `"bom"`, `"suspeito"`, `"ruim"`| Sim         |
-| `_execution_date`| DateType      | —               | Data de execução do job            | Sim         |
-| `_processed_at`  | TimestampType | —               | Timestamp de processamento         | Sim         |
-| `_data_source`   | StringType    | —               | Valor fixo: `"postgres"`          | Sim         |
+| `_execution_date`| DateType      | -               | Data de execução do job            | Sim         |
+| `_processed_at`  | TimestampType | -               | Timestamp de processamento         | Sim         |
+| `_data_source`   | StringType    | -               | Valor fixo: `"postgres"`          | Sim         |
 
 ---
 
@@ -218,15 +218,15 @@
 | `sensors`                 | ArrayType(Struct)  | Array         | Lista de sensores `[{id, type, range:{min,max}}]`   | Sim         |
 | `status`                  | StringType         | String        | `active`, `inactive`, `maintenance`                  | Sim         |
 | `periodicidade_manutencao`| StringType         | String        | Ex: `"monthly"`, `"weekly"`                          | Não         |
-| `_execution_date`         | DateType           | —             | Data de execução do job                              | Sim         |
-| `_processed_at`           | TimestampType      | —             | Timestamp de processamento                           | Sim         |
-| `_data_source`            | StringType         | —             | Valor fixo: `"mongo"`                               | Sim         |
+| `_execution_date`         | DateType           | -             | Data de execução do job                              | Sim         |
+| `_processed_at`           | TimestampType      | -             | Timestamp de processamento                           | Sim         |
+| `_data_source`            | StringType         | -             | Valor fixo: `"mongo"`                               | Sim         |
 
 ---
 
 ### 1.10 bronze/factory_id=\*/measurement_type=\*/dt=\* (Kafka)
 
-**Origem:** Apache Kafka — tópico de sensores IoT  
+**Origem:** Apache Kafka - tópico de sensores IoT  
 **Carga:** Streaming contínuo via `bronze_consumer.py`  
 **Formato:** NDJSON (`.ndjson`), um arquivo por batch  
 **Particionamento Hive:** `factory_id` / `measurement_type` / `dt=YYYY-MM-DD`
@@ -236,7 +236,7 @@
 | `event_id`           | String     | UUID único do evento                                        | Sim         |
 | `sensor_id`          | String     | Identificador do sensor (ex: SENS-001-TEMP)                 | Sim         |
 | `equipment_id`       | String     | Identificador do equipamento (ex: EQ-1234)                  | Sim         |
-| `factory_id`         | String     | Identificador da fábrica — também chave de partição Hive    | Sim         |
+| `factory_id`         | String     | Identificador da fábrica - também chave de partição Hive    | Sim         |
 | `measurement_type`   | String     | `temperature`, `humidity`, `pressure`, `vibration`, `current`| Sim        |
 | `value`              | Number     | Valor medido                                                | Sim         |
 | `unit`               | String     | Unidade de medida (ex: `"celsius"`)                        | Sim         |
@@ -248,7 +248,7 @@
 | `_kafka_partition`   | Integer    | Partição Kafka                                              | Sim         |
 | `_kafka_offset`      | Long       | Offset dentro da partição                                   | Sim         |
 | `_kafka_key`         | String     | Chave de mensagem Kafka                                     | Não         |
-| `_ingested_at`       | String     | ISO 8601 — timestamp de gravação no MinIO pelo consumer     | Sim         |
+| `_ingested_at`       | String     | ISO 8601 - timestamp de gravação no MinIO pelo consumer     | Sim         |
 
 ---
 
@@ -270,7 +270,7 @@
 
 | Coluna           | Tipo Spark    | Transformação Silver              | Obrigatório |
 |------------------|---------------|-----------------------------------|-------------|
-| `id`             | StringType    | Cast VARCHAR(20) — chave natural  | Sim         |
+| `id`             | StringType    | Cast VARCHAR(20) - chave natural  | Sim         |
 | `nome`           | StringType    | Cast StringType                   | Sim         |
 | `latitude`       | DoubleType    | Cast DoubleType                   | Sim         |
 | `longitude`      | DoubleType    | Cast DoubleType                   | Sim         |
@@ -278,7 +278,7 @@
 | `_processed_at`  | TimestampType | Atualizado no processamento       | Sim         |
 | `_data_source`   | StringType    | Herdado                           | Sim         |
 
-**Qualidade (PyDeequ — Error):** `id`, `nome`, `latitude`, `longitude` completos.
+**Qualidade (PyDeequ - Error):** `id`, `nome`, `latitude`, `longitude` completos.
 
 ---
 
@@ -297,11 +297,11 @@
 | `fabrica_id`         | StringType    | Cast VARCHAR(20)                                            | Sim         |
 | `status`             | StringType    | Filter: `{ativo, inativo, manutencao}`                      | Sim         |
 | `data_instalacao`    | DateType      | Cast DateType                                               | Não         |
-| `_execution_date`    | DateType      | —                                                           | Sim         |
-| `_processed_at`      | TimestampType | —                                                           | Sim         |
-| `_data_source`       | StringType    | —                                                           | Sim         |
+| `_execution_date`    | DateType      | -                                                           | Sim         |
+| `_processed_at`      | TimestampType | -                                                           | Sim         |
+| `_data_source`       | StringType    | -                                                           | Sim         |
 
-**Qualidade (PyDeequ — Error):** `id`, `nome`, `tipo_equipamento_id`, `fabrica_id`, `status` completos; `status ∈ {ativo, inativo, manutencao}`.
+**Qualidade (PyDeequ - Error):** `id`, `nome`, `tipo_equipamento_id`, `fabrica_id`, `status` completos; `status ∈ {ativo, inativo, manutencao}`.
 
 ---
 
@@ -315,11 +315,11 @@
 |------------------|---------------|----------------------|-------------|
 | `id`             | IntegerType   | Cast IntegerType     | Sim         |
 | `nome`           | StringType    | Cast StringType      | Sim         |
-| `_execution_date`| DateType      | —                    | Sim         |
-| `_processed_at`  | TimestampType | —                    | Sim         |
-| `_data_source`   | StringType    | —                    | Sim         |
+| `_execution_date`| DateType      | -                    | Sim         |
+| `_processed_at`  | TimestampType | -                    | Sim         |
+| `_data_source`   | StringType    | -                    | Sim         |
 
-**Qualidade (PyDeequ — Error):** `id`, `nome` completos; `nome` único.
+**Qualidade (PyDeequ - Error):** `id`, `nome` completos; `nome` único.
 
 ---
 
@@ -336,11 +336,11 @@
 | `tipo_medicao_id` | IntegerType   | Cast IntegerType                                 | Sim         |
 | `status`          | StringType    | Filter: `{ativo, inativo, manutencao}`           | Sim         |
 | `data_instalacao` | DateType      | Cast DateType                                    | Não         |
-| `_execution_date` | DateType      | —                                                | Sim         |
-| `_processed_at`   | TimestampType | —                                                | Sim         |
-| `_data_source`    | StringType    | —                                                | Sim         |
+| `_execution_date` | DateType      | -                                                | Sim         |
+| `_processed_at`   | TimestampType | -                                                | Sim         |
+| `_data_source`    | StringType    | -                                                | Sim         |
 
-**Qualidade (PyDeequ — Error):** `id`, `equipamento_id`, `tipo_medicao_id`, `status` completos; `status ∈ {ativo, inativo, manutencao}`.
+**Qualidade (PyDeequ - Error):** `id`, `equipamento_id`, `tipo_medicao_id`, `status` completos; `status ∈ {ativo, inativo, manutencao}`.
 
 ---
 
@@ -359,16 +359,16 @@
 | `valor_maximo`     | DoubleType    | Cast DoubleType                                         | Sim         |
 | `faixa_normal_min` | DoubleType    | Cast DoubleType; Filter: `faixa_normal_min < faixa_normal_max` | Sim  |
 | `faixa_normal_max` | DoubleType    | Cast DoubleType                                         | Sim         |
-| `_execution_date`  | DateType      | —                                                       | Sim         |
-| `_processed_at`    | TimestampType | —                                                       | Sim         |
-| `_data_source`     | StringType    | —                                                       | Sim         |
+| `_execution_date`  | DateType      | -                                                       | Sim         |
+| `_processed_at`    | TimestampType | -                                                       | Sim         |
+| `_data_source`     | StringType    | -                                                       | Sim         |
 
 ---
 
 ### 2.6 silver/postgres/leituras
 
 **Origem:** `bronze/postgres/leituras`  
-**Carga:** Incremental — filtra `_execution_date == execution_date` na bronze  
+**Carga:** Incremental - filtra `_execution_date == execution_date` na bronze  
 **ETL:** `src/processamento/silver/postgres/leituras.py`  
 **Particionamento:** `_execution_date`  
 **Chave de merge:** `target.id = source.id`
@@ -382,10 +382,10 @@
 | `timestamp_leitura`  | TimestampType | Cast TimestampType           | Sim         |
 | `is_anomalia`        | BooleanType   | Cast BooleanType             | Não         |
 | `_execution_date`    | DateType      | Partição de reprocessamento  | Sim         |
-| `_processed_at`      | TimestampType | —                            | Sim         |
-| `_data_source`       | StringType    | —                            | Sim         |
+| `_processed_at`      | TimestampType | -                            | Sim         |
+| `_data_source`       | StringType    | -                            | Sim         |
 
-**Qualidade (PyDeequ — Error):** `id`, `sensor_id`, `valor`, `status_qualidade_id`, `timestamp_leitura` completos.
+**Qualidade (PyDeequ - Error):** `id`, `sensor_id`, `valor`, `status_qualidade_id`, `timestamp_leitura` completos.
 
 ---
 
@@ -403,9 +403,9 @@
 | `versao_firmware` | StringType    | Cast StringType      | Não         |
 | `nivel_bateria`   | IntegerType   | Cast IntegerType     | Não         |
 | `forca_sinal_dbm` | IntegerType   | Cast IntegerType     | Não         |
-| `_execution_date` | DateType      | —                    | Sim         |
-| `_processed_at`   | TimestampType | —                    | Sim         |
-| `_data_source`    | StringType    | —                    | Sim         |
+| `_execution_date` | DateType      | -                    | Sim         |
+| `_processed_at`   | TimestampType | -                    | Sim         |
+| `_data_source`    | StringType    | -                    | Sim         |
 
 ---
 
@@ -419,9 +419,9 @@
 |------------------|---------------|----------------------|-------------|
 | `id`             | IntegerType   | Cast IntegerType     | Sim         |
 | `nome`           | StringType    | Cast StringType      | Sim         |
-| `_execution_date`| DateType      | —                    | Sim         |
-| `_processed_at`  | TimestampType | —                    | Sim         |
-| `_data_source`   | StringType    | —                    | Sim         |
+| `_execution_date`| DateType      | -                    | Sim         |
+| `_processed_at`  | TimestampType | -                    | Sim         |
+| `_data_source`   | StringType    | -                    | Sim         |
 
 ---
 
@@ -446,11 +446,11 @@
 | `sensors`                 | ArrayType(Struct)  | Mantido como struct aninhado              | Sim         |
 | `status`                  | StringType         | Filter: `{active, inactive, maintenance}` | Sim         |
 | `periodicidade_manutencao`| StringType         | Cast StringType                           | Não         |
-| `_execution_date`         | DateType           | —                                         | Sim         |
-| `_processed_at`           | TimestampType      | —                                         | Sim         |
-| `_data_source`            | StringType         | —                                         | Sim         |
+| `_execution_date`         | DateType           | -                                         | Sim         |
+| `_processed_at`           | TimestampType      | -                                         | Sim         |
+| `_data_source`            | StringType         | -                                         | Sim         |
 
-**Qualidade (PyDeequ — Error):** `equipamento_id`, `nome`, `tipo`, `fabrica_id`, `status` completos; `status ∈ {active, inactive, maintenance}`.
+**Qualidade (PyDeequ - Error):** `equipamento_id`, `nome`, `tipo`, `fabrica_id`, `status` completos; `status ∈ {active, inactive, maintenance}`.
 
 ---
 
@@ -478,16 +478,16 @@
 | `nivel_bateria`    | IntegerType   | `metadata.battery_level` achatado                      | Não         |
 | `_ingested_at`     | TimestampType | Preservado da bronze; cast TimestampType               | Sim         |
 | `_execution_date`  | DateType      | Partição de reprocessamento                             | Sim         |
-| `_processed_at`    | TimestampType | —                                                       | Sim         |
-| `_data_source`     | StringType    | —                                                       | Sim         |
+| `_processed_at`    | TimestampType | -                                                       | Sim         |
+| `_data_source`     | StringType    | -                                                       | Sim         |
 
 > **Campos removidos na Silver:** `metadata` (achatado em `versao_firmware` e `nivel_bateria`), `_kafka_offset`, `_kafka_partition`, `_kafka_topic`, `_kafka_key`.
 
-**Qualidade (PyDeequ — Error):** `event_id`, `sensor_id`, `equipment_id`, `factory_id`, `measurement_type`, `value`, `timestamp`, `quality` completos; `quality ∈ {good, warning, bad}`; `measurement_type ∈ {temperature, humidity, pressure, vibration, current}`.
+**Qualidade (PyDeequ - Error):** `event_id`, `sensor_id`, `equipment_id`, `factory_id`, `measurement_type`, `value`, `timestamp`, `quality` completos; `quality ∈ {good, warning, bad}`; `measurement_type ∈ {temperature, humidity, pressure, vibration, current}`.
 
 ---
 
-## 3. Camada Gold — Modelagem Dimensional Proposta
+## 3. Camada Gold - Modelagem Dimensional Proposta
 
 **Formato:** Delta Lake  
 **Localização:** `s3a://gold/{table}/`  
@@ -553,7 +553,7 @@
 
 | Coluna       | Tipo Spark  | Descrição                                      |
 |--------------|-------------|------------------------------------------------|
-| `date_key`   | LongType    | PK — formato `YYYYMMDDHH` (ex: `2026061914`)   |
+| `date_key`   | LongType    | PK - formato `YYYYMMDDHH` (ex: `2026061914`)   |
 | `data`       | DateType    | Data completa                                  |
 | `hora`       | IntegerType | Hora do dia (0–23)                             |
 | `dia_semana` | IntegerType | 1=Dom, 2=Seg, …, 7=Sáb (padrão ISO-like)       |
@@ -572,7 +572,7 @@
 
 | Coluna      | Tipo Spark  | Descrição                        |
 |-------------|-------------|----------------------------------|
-| `fabrica_id`| StringType  | PK — ex: `"FAB-SP-01"`          |
+| `fabrica_id`| StringType  | PK - ex: `"FAB-SP-01"`          |
 | `nome`      | StringType  | Nome da fábrica                  |
 | `latitude`  | DoubleType  | Latitude geográfica              |
 | `longitude` | DoubleType  | Longitude geográfica             |
@@ -587,7 +587,7 @@
 
 | Coluna                    | Tipo Spark  | Descrição                                          |
 |---------------------------|-------------|----------------------------------------------------|
-| `equipment_id`            | StringType  | PK — ex: `"EQ-1234"`                              |
+| `equipment_id`            | StringType  | PK - ex: `"EQ-1234"`                              |
 | `nome`                    | StringType  | Nome do equipamento                                |
 | `tipo_equipamento`        | StringType  | Nome do tipo (join com tipos_equipamento)          |
 | `fabrica_id`              | StringType  | FK → dim_fabrica                                   |
@@ -604,7 +604,7 @@
 
 | Coluna           | Tipo Spark  | Descrição                      |
 |------------------|-------------|--------------------------------|
-| `sensor_id`      | StringType  | PK — ex: `"SENS-001-TEMP"`    |
+| `sensor_id`      | StringType  | PK - ex: `"SENS-001-TEMP"`    |
 | `equipment_id`   | StringType  | FK → dim_equipamento           |
 | `tipo_medicao_id`| IntegerType | FK → dim_tipo_medicao          |
 | `status`         | StringType  | `ativo`, `inativo`, `manutencao`|
@@ -644,11 +644,11 @@
 | `equipment_id`      | StringType    | FK → dim_equipamento (desnormalizado para performance) |
 | `fabrica_id`        | StringType    | FK → dim_fabrica (desnormalizado)                      |
 | `tipo_medicao_id`   | IntegerType   | FK → dim_tipo_medicao                                  |
-| `measurement_type`  | StringType    | Redundante com dim_tipo_medicao — filtro de partição   |
+| `measurement_type`  | StringType    | Redundante com dim_tipo_medicao - filtro de partição   |
 | `avg_valor`         | DoubleType    | Média das leituras na hora                             |
 | `min_valor`         | DoubleType    | Mínimo das leituras na hora                            |
 | `max_valor`         | DoubleType    | Máximo das leituras na hora                            |
-| `stddev_valor`      | DoubleType    | Desvio padrão — útil para ML preditivo                 |
+| `stddev_valor`      | DoubleType    | Desvio padrão - útil para ML preditivo                 |
 | `count_leituras`    | LongType      | Número de leituras no intervalo                        |
 | `count_anomalias`   | LongType      | Leituras com `is_anomaly = true`                       |
 | `pct_qualidade_boa` | DoubleType    | % de leituras com `quality = "good"` (0.0–1.0)        |
@@ -720,8 +720,8 @@ Apache Kafka (sensor topic)
 
 | Ambiente | Bucket Bronze   | Bucket Silver   | Uso                      |
 |----------|-----------------|-----------------|--------------------------|
-| `prd`    | `bronze`        | `silver`        | Produção — ambiente ativo|
-| `hmg`    | `bronze-hmg`    | `silver-hmg`    | Homologação — inativo    |
+| `prd`    | `bronze`        | `silver`        | Produção - ambiente ativo|
+| `hmg`    | `bronze-hmg`    | `silver-hmg`    | Homologação - inativo    |
 
 ### Tipos de carga
 

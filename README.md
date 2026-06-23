@@ -73,6 +73,9 @@ poetry install
 
 **Linux/Mac - subir toda a infra com um comando:**
 ```bash
+# Na primeira vez, libere a execução dos scripts:
+chmod +x scripts/start.sh scripts/start_without_terraform.sh scripts/stop-all.sh
+
 ./scripts/start.sh
 ```
 
