@@ -54,7 +54,7 @@ with DAG(
     default_args=default_args,
     tags=["iot", "bronze", "silver", "gold"],
     max_active_runs=1,
-    concurrency=1,
+    max_active_tasks=1,
 ) as dag:
 
     
