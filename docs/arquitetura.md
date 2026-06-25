@@ -5,13 +5,13 @@
 A plataforma implementa uma **arquitetura Medallion** (Bronze → Silver → Gold) sobre object storage compatível com S3 (MinIO), orquestrada por Apache Airflow e processada via Apache Spark com Delta Lake.
 
 ```
-┌─────────────────────────────────────────────────────────────────────┐
-│                        FONTES DE DADOS                              │
-│  Sensores IoT       PostgreSQL ERP      MongoDB             API REST │
-│  (Simulador)        (erp_legado)        (equipments)        (-)     │
-└──────┬──────────────────┬───────────────────┬──────────────────┬────┘
-       │  Streaming        │  Batch JDBC        │  Batch JDBC      │ Batch
-       ▼                   ▼                   ▼                  ▼
+┌──────────────────────────────────────────────────────────────┐
+│                        FONTES DE DADOS                       │
+│  Sensores IoT       PostgreSQL ERP      MongoDB              │
+│  (Simulador)        (erp_legado)        (equipments)         │
+└──────┬──────────────────┬───────────────────┬────────────────┘
+       │  Streaming        │  Batch JDBC        │  Batch JDBC 
+       ▼                   ▼                   ▼              
 ┌─────────────────────────────────────────────────────────────────────┐
 │                     CAMADA DE INGESTÃO                              │
 │  Apache Kafka (KRaft)           spark-submit (AbstractETL)          │
@@ -33,18 +33,18 @@ A plataforma implementa uma **arquitetura Medallion** (Bronze → Silver → Gol
 │  postgres/{7 tabelas}/       (Delta, upsert, full ou incremental)   │
 │  mongo/equipamentos/         (Delta, upsert, full load)             │
 └──────────────────────────────┬──────────────────────────────────────┘
-                               │  spark-submit (GoldETL) [planejado]
+                               │  spark-submit (GoldETL)
                                ▼
 ┌─────────────────────────────────────────────────────────────────────┐
-│              GOLD  -  MinIO bucket: gold  [planejado]               │
+│              GOLD  -  MinIO bucket: gold                             │
 │  fct_leituras_hora/          (Delta, agregações horárias)           │
 │  fct_anomalias_dia/          (Delta, contagem diária de anomalias)  │
 │  dim_{tempo,fabrica,equipamento,sensor,tipo_medicao}/               │
-└──────────────────────────────┬──────────────────────────────────────┘
+└─────────────────────────────────────────────────────────────────────┘
                                │
                                ▼
 ┌─────────────────────────────────────────────────────────────────────┐
-│                   CAMADA DE ORQUESTRAÇÃO  [planejado]               │
+│                   CAMADA DE ORQUESTRAÇÃO                             │
 │  Apache Airflow - DAGs: bronze_daily, silver_daily, gold_daily      │
 └─────────────────────────────────────────────────────────────────────┘
 ```
@@ -55,8 +55,8 @@ A plataforma implementa uma **arquitetura Medallion** (Bronze → Silver → Gol
 |----------|--------------|---------------------------------------------------------------|
 | Bronze   | ✅ Completo  | 8 Parquet (PG + Mongo) + NDJSON Kafka particionado            |
 | Silver   | ✅ Completo  | 10 Delta Tables (PG×8, Mongo×1, Kafka×1)                      |
-| Gold     | 🔲 Planejado | Star schema dimensional (ver `docs/catalogo-dados.md`)        |
-| Airflow  | 🔲 Planejado | DAGs Bronze/Silver/Gold com schedule diário                   |
+| Gold     | ✅ Completo  | Star schema dimensional com agregações analíticas             |
+| Airflow  | ✅ Completo  | DAGs Bronze/Silver/Gold executando schedule diário            |
 
 ---
 

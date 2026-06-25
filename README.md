@@ -36,12 +36,25 @@ Decisões de arquitetura e ADRs: [docs/arquitetura.md](docs/arquitetura.md)
 
 ```
 projeto-iot-dados/
-├── docker-compose.yml              # Stack de streaming (Kafka + Schema Registry)
+├── infra/kafka/docker-compose.yml  # Stack de streaming (Kafka + Schema Registry)
 ├── .env.template                   # Template de variáveis de ambiente
 ├── pyproject.toml                  # Gerenciamento de dependências (Poetry)
 ├── scripts/
 │   ├── start.sh                    # Sobe toda a infra (Linux/Mac)
 │   ├── start.ps1                   # Sobe toda a infra (Windows/PowerShell)
+│   ├── start-infra.sh              # Sobe apenas a infra base
+│   │   stop-infra.sh               # Para apenas a infra base
+│   │   start-kafka.sh               # Sobe apenas Kafka + Schema Registry + Kafka UI
+│   │   stop-kafka.sh                # Para apenas Kafka + Schema Registry + Kafka UI
+│   │   start-airflow.sh             # Inicializa e sobe apenas o Airflow
+│   │   stop-airflow.sh              # Para apenas o Airflow
+│   │   start-infra.ps1              # PowerShell: sobe apenas a infra base
+│   │   stop-infra.ps1               # PowerShell: para apenas a infra base
+│   │   start-kafka.ps1              # PowerShell: sobe apenas Kafka + Schema Registry + Kafka UI
+│   │   stop-kafka.ps1               # PowerShell: para apenas Kafka + Schema Registry + Kafka UI
+│   │   start-airflow.ps1            # PowerShell: inicializa e sobe apenas o Airflow
+│   │   stop-airflow.ps1             # PowerShell: para apenas o Airflow
+│   └── README.md                   # Documentação dos scripts locais
 ├── docs/
 │   ├── setup.md                    # Guia de instalação e execução
 │   ├── streaming.md                # Infraestrutura Kafka (serviços, comandos)

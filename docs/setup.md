@@ -110,13 +110,14 @@ Esse script automaticamente:
 Para entender melhor cada componente:
 
 * Storage: [infra/docker/README.md](../infra/docker/README.md)
+* Spark Dockerfile: [docs/spark-dockerfile.md](spark-dockerfile.md)
 * Terraform (automático): [infra/terraform/README.md](../infra/terraform/README.md)
 * Streaming: [docs/streaming.md](streaming.md)
 
 Após alguns segundos, verifique o status com:
 
 ```bash
-docker compose ps
+docker compose -f infra/kafka/docker-compose.yml ps
 ```
 
 ---
@@ -186,10 +187,10 @@ Na raiz do projeto:
 
 ```bash
 # Remove containers e volumes (dados do Kafka são descartados)
-docker compose down -v
+docker compose -f infra/kafka/docker-compose.yml down -v
 
 # Se quiser manter os dados do Kafka para a próxima sessão, omita o -v:
-docker compose down
+docker compose -f infra/kafka/docker-compose.yml down
 ```
 
 ### 9c. Derrubar a stack de storage (MongoDB, PostgreSQL, MinIO)
@@ -218,7 +219,7 @@ cd ../..
 
 | O que derrubar | Comando |
 |---|---|
-| Só streaming (Kafka) | `docker compose down -v` |
+| Só streaming (Kafka) | `docker compose -f infra/kafka/docker-compose.yml down -v` |
 | Só storage | `docker compose -f infra/docker/docker-compose.yml --env-file .env down -v` |
 | Só Airflow | `docker compose -f infra/airflow/docker-compose.yaml --env-file .env down -v` |
 | Tudo (recomendado) | `./scripts/stop-all.sh` |

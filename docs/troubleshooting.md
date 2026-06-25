@@ -6,8 +6,8 @@
 
 | Erro | Causa | Solução |
 |---|---|---|
-| `kafka is unhealthy` | Kafka ainda inicializando (KRaft formata storage na 1ª subida) | Aguarde 30s e rode `docker compose ps` |
-| `NoBrokersAvailable` | Kafka não acessível | Verifique se `docker compose ps` mostra Kafka `Up (healthy)` |
+| `kafka is unhealthy` | Kafka ainda inicializando (KRaft formata storage na 1ª subida) | Aguarde 30s e rode `docker compose -f infra/kafka/docker-compose.yml ps` |
+| `NoBrokersAvailable` | Kafka não acessível | Verifique se `docker compose -f infra/kafka/docker-compose.yml ps` mostra Kafka `Up (healthy)` |
 | `ERRO: Variável 'KAFKA_BOOTSTRAP_SERVERS' não definida` | Arquivo `.env` não existe ou está incompleto | Copie `.env.template` para `.env` e preencha |
 | `python-dotenv não instalado` | Dependências não instaladas | Execute `poetry install` |
 | `docker não reconhecido` | Docker Desktop fechado | Abra o Docker Desktop e aguarde a baleia estabilizar |
@@ -24,11 +24,11 @@
 
 ```bash
 # --- Streaming (Kafka) ---
-docker compose ps
-docker compose logs -f kafka
-docker compose logs schema-registry --tail=10
-docker compose down
-docker compose down -v   # reset completo (apaga volumes Kafka)
+docker compose -f infra/kafka/docker-compose.yml ps
+docker compose -f infra/kafka/docker-compose.yml logs -f kafka
+docker compose -f infra/kafka/docker-compose.yml logs schema-registry --tail=10
+docker compose -f infra/kafka/docker-compose.yml down
+docker compose -f infra/kafka/docker-compose.yml down -v   # reset completo (apaga volumes Kafka)
 
 # --- Storage (MongoDB, PostgreSQL, MinIO) ---
 docker compose -f infra/docker/docker-compose.yml ps

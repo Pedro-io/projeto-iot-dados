@@ -30,7 +30,7 @@ docker compose -f infra/docker/docker-compose.yml ps
 cd "$ROOT"
 
 echo "==> Subindo Kafka + Schema Registry + Kafka UI..."
-docker compose up -d
+docker compose -f infra/kafka/docker-compose.yml up -d
 
 echo "==> Inicializando banco de dados do Airflow..."
 docker compose --env-file .env -f infra/airflow/docker-compose.yaml up airflow-init --wait

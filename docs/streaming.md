@@ -2,7 +2,7 @@
 
 Este documento descreve a stack de streaming do projeto, responsável por receber e rotear eventos dos sensores IoT em tempo real.
 
-A stack é definida no arquivo `docker-compose.yml` na raiz do projeto.
+A stack é definida no arquivo `infra/kafka/docker-compose.yml`.
 
 ---
 
@@ -81,13 +81,13 @@ Sensores IoT (Simulador)
 Execute a partir da raiz do projeto:
 
 ```bash
-docker compose up -d
+docker compose -f infra/kafka/docker-compose.yml up -d
 ```
 
 ### Verificar status
 
 ```bash
-docker compose ps
+docker compose -f infra/kafka/docker-compose.yml ps
 ```
 
 Saída esperada:
@@ -104,25 +104,25 @@ kafka-ui               Up
 
 ```bash
 # Todos os serviços
-docker compose logs -f
+docker compose -f infra/kafka/docker-compose.yml logs -f
 
 # Apenas Kafka
-docker compose logs -f kafka
+docker compose -f infra/kafka/docker-compose.yml logs -f kafka
 
 # Últimas 10 linhas do Schema Registry
-docker compose logs schema-registry --tail=10
+docker compose -f infra/kafka/docker-compose.yml logs schema-registry --tail=10
 ```
 
 ### Parar sem apagar dados
 
 ```bash
-docker compose down
+docker compose -f infra/kafka/docker-compose.yml down
 ```
 
 ### Parar e resetar volumes Kafka (reset completo)
 
 ```bash
-docker compose down -v
+docker compose -f infra/kafka/docker-compose.yml down -v
 ```
 
 ---

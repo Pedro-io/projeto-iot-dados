@@ -4,6 +4,8 @@ Este documento descreve como executar scripts PySpark no cluster local, acompanh
 
 A stack Spark é definida em `infra/docker/docker-compose.yml` e composta por dois containers: `spark-master` e `spark-worker`.
 
+Para detalhes da imagem Spark e do Dockerfile usado pelo cluster, veja `docs/spark-dockerfile.md`.
+
 ---
 
 ## Pré-requisitos
