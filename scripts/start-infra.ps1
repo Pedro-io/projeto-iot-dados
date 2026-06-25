@@ -59,19 +59,9 @@ Set-Location "infra/terraform"
     -auto-approve -input=false
 Set-Location $Root
 
-Write-Host "==> Subindo Kafka + Schema Registry + Kafka UI..."
-docker compose -f infra/kafka/docker-compose.yml up -d
-
-Write-Host "==> Inicializando banco de dados do Airflow..."
-docker compose --env-file .env -f infra/airflow/docker-compose.yaml up airflow-init --wait
-Write-Host "==> Subindo Airflow (scheduler, worker, api-server)..."
-docker compose --env-file .env -f infra/airflow/docker-compose.yaml up -d
-
 Write-Host ""
-Write-Host "Stack no ar:"
+Write-Host "Infra no ar:"
 Write-Host "  Grafana       -> http://localhost:3001  (admin / 12345678)"
 Write-Host "  MinIO         -> http://localhost:9001"
-Write-Host "  Kafka UI      -> http://localhost:8088"
 Write-Host "  Mongo Express -> http://localhost:8083"
 Write-Host "  Adminer       -> http://localhost:8082"
-Write-Host "  Airflow       -> http://localhost:8080  (airflow / airflow)"
