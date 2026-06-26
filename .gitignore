@@ -25,6 +25,4 @@ build/
 *.swp
 
 #Airflow
-airflow.cfg
-*.airflow/config/*
 infra/airflow/logs/
