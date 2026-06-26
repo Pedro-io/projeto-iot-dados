@@ -49,7 +49,7 @@ A plataforma implementa uma **arquitetura Medallion** (Bronze → Silver → Gol
 └─────────────────────────────────────────────────────────────────────┘
 ```
 
-## Status de Implementação (2026-06-19)
+## Status de Implementação (2026-06-26)
 
 | Camada   | Status       | Tabelas                                                       |
 |----------|--------------|---------------------------------------------------------------|

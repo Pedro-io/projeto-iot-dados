@@ -1,8 +1,8 @@
-from datetime import datetime, timedelta
+from datetime import datetime
 
-from airflow.sdk import DAG
+from airflow import DAG
 from airflow.providers.standard.operators.bash import BashOperator
-from airflow.utils.task_group import TaskGroup
+from airflow.sdk import TaskGroup
 
 ENVIRONMENT = "prd"
 OWNER = "airflow"
