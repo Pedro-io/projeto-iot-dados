@@ -1,0 +1,264 @@
+========================================
+ TESTES - ETLs Camada Bronze
+========================================
+
+PRÉ-REQUISITOS
+--------------
+1. Stack Docker rodando:
+   cd infra/docker && docker compose --env-file ../../.env up -d
+
+2. Verificar worker registrado:
+   http://localhost:8085  (Spark Master UI)
+
+3. Os scripts usam PYTHONPATH=/jobs (src/ montado em /jobs no container).
+   Nenhuma configuração extra necessária - os imports já estão corretos.
+
+
+VARIÁVEIS DE REFERÊNCIA (não são comandos, só para leitura)
+-----------------------------------------------------------
+EXEC_DATE   = 2026-06-18
+ENV         = hmg
+OWNER       = pedro
+MONGO_URI   = mongodb://root:123@mongodb:27017/?authSource=admin
+JDBC_URL    = jdbc:postgresql://postgres:5432/erp_database
+JDBC_USER   = postgres
+JDBC_PASS   = 123
+
+
+FORMATO DOS COMANDOS
+--------------------
+Todos usam --master local[*] (modo desenvolvimento, sem enviar ao worker).
+Troque por spark://spark-master:7077 para usar o cluster completo.
+
+
+========================================
+ MONGODB
+========================================
+
+--- 1. Equipamentos (MongoDB -> Bronze) ---
+Extrai a coleção equipments, achata o struct factory e grava Delta em MinIO.
+
+docker exec \
+  -e MINIO_ROOT_USER=1234 \
+  -e MINIO_ROOT_PASSWORD=12345678 \
+  -e PYTHONPATH=/jobs \
+  spark-master \
+  /opt/spark/bin/spark-submit \
+    --master local[*] \
+    /jobs/processamento/bronze/mongo/equipamentos.py \
+    --execution_date 2026-06-18 \
+    --environment hmg \
+    --owner pedro \
+    --mongo_uri "mongodb://root:123@mongodb:27017/?authSource=admin" \
+    --mongo_database Database \
+    --mongo_collection equipments
+
+
+========================================
+ POSTGRESQL - TABELAS DE DOMÍNIO
+========================================
+
+--- 2. Tipos de Equipamento ---
+Carga completa da tabela de domínio erp_legado.tipos_equipamento.
+
+docker exec \
+  -e MINIO_ROOT_USER=1234 \
+  -e MINIO_ROOT_PASSWORD=12345678 \
+  -e PYTHONPATH=/jobs \
+  spark-master \
+  /opt/spark/bin/spark-submit \
+    --master local[*] \
+    /jobs/processamento/bronze/postgres/tipos_equipamento.py \
+    --execution_date 2026-06-18 \
+    --environment hmg \
+    --owner pedro \
+    --jdbc_url "jdbc:postgresql://postgres:5432/erp_database" \
+    --jdbc_user postgres \
+    --jdbc_password 123
+
+
+--- 3. Tipos de Medição ---
+Carga completa da tabela de domínio erp_legado.tipos_medicao.
+
+docker exec \
+  -e MINIO_ROOT_USER=1234 \
+  -e MINIO_ROOT_PASSWORD=12345678 \
+  -e PYTHONPATH=/jobs \
+  spark-master \
+  /opt/spark/bin/spark-submit \
+    --master local[*] \
+    /jobs/processamento/bronze/postgres/tipos_medicao.py \
+    --execution_date 2026-06-18 \
+    --environment hmg \
+    --owner pedro \
+    --jdbc_url "jdbc:postgresql://postgres:5432/erp_database" \
+    --jdbc_user postgres \
+    --jdbc_password 123
+
+
+--- 4. Status de Qualidade ---
+Carga completa da tabela de domínio erp_legado.status_qualidade.
+
+docker exec \
+  -e MINIO_ROOT_USER=1234 \
+  -e MINIO_ROOT_PASSWORD=12345678 \
+  -e PYTHONPATH=/jobs \
+  spark-master \
+  /opt/spark/bin/spark-submit \
+    --master local[*] \
+    /jobs/processamento/bronze/postgres/status_qualidade.py \
+    --execution_date 2026-06-18 \
+    --environment hmg \
+    --owner pedro \
+    --jdbc_url "jdbc:postgresql://postgres:5432/erp_database" \
+    --jdbc_user postgres \
+    --jdbc_password 123
+
+
+========================================
+ POSTGRESQL - TABELAS MESTRE
+========================================
+
+--- 5. Fábricas ---
+Carga completa da tabela mestre erp_legado.fabricas.
+
+docker exec \
+  -e MINIO_ROOT_USER=1234 \
+  -e MINIO_ROOT_PASSWORD=12345678 \
+  -e PYTHONPATH=/jobs \
+  spark-master \
+  /opt/spark/bin/spark-submit \
+    --master local[*] \
+    /jobs/processamento/bronze/postgres/fabricas.py \
+    --execution_date 2026-06-18 \
+    --environment hmg \
+    --owner pedro \
+    --jdbc_url "jdbc:postgresql://postgres:5432/erp_database" \
+    --jdbc_user postgres \
+    --jdbc_password 123
+
+
+--- 6. Equipamentos (PostgreSQL) ---
+Carga completa da tabela mestre erp_legado.equipamentos.
+
+docker exec \
+  -e MINIO_ROOT_USER=1234 \
+  -e MINIO_ROOT_PASSWORD=12345678 \
+  -e PYTHONPATH=/jobs \
+  spark-master \
+  /opt/spark/bin/spark-submit \
+    --master local[*] \
+    /jobs/processamento/bronze/postgres/equipamentos.py \
+    --execution_date 2026-06-18 \
+    --environment hmg \
+    --owner pedro \
+    --jdbc_url "jdbc:postgresql://postgres:5432/erp_database" \
+    --jdbc_user postgres \
+    --jdbc_password 123
+
+
+--- 7. Sensores ---
+Carga completa da tabela mestre erp_legado.sensores.
+
+docker exec \
+  -e MINIO_ROOT_USER=1234 \
+  -e MINIO_ROOT_PASSWORD=12345678 \
+  -e PYTHONPATH=/jobs \
+  spark-master \
+  /opt/spark/bin/spark-submit \
+    --master local[*] \
+    /jobs/processamento/bronze/postgres/sensores.py \
+    --execution_date 2026-06-18 \
+    --environment hmg \
+    --owner pedro \
+    --jdbc_url "jdbc:postgresql://postgres:5432/erp_database" \
+    --jdbc_user postgres \
+    --jdbc_password 123
+
+
+========================================
+ POSTGRESQL - TABELAS TRANSACIONAIS
+========================================
+
+--- 8. Leituras ---
+Carga incremental de erp_legado.leituras com janela deslizante.
+Como hoje (2026-06-18) é depois do dia 10, a janela começa em 2026-06-01.
+
+docker exec \
+  -e MINIO_ROOT_USER=1234 \
+  -e MINIO_ROOT_PASSWORD=12345678 \
+  -e PYTHONPATH=/jobs \
+  spark-master \
+  /opt/spark/bin/spark-submit \
+    --master local[*] \
+    /jobs/processamento/bronze/postgres/leituras.py \
+    --execution_date 2026-06-18 \
+    --environment hmg \
+    --owner pedro \
+    --jdbc_url "jdbc:postgresql://postgres:5432/erp_database" \
+    --jdbc_user postgres \
+    --jdbc_password 123
+
+Teste com data no início do mês (janela abre no mês anterior, 2026-05-01):
+
+docker exec \
+  -e MINIO_ROOT_USER=1234 \
+  -e MINIO_ROOT_PASSWORD=12345678 \
+  -e PYTHONPATH=/jobs \
+  spark-master \
+  /opt/spark/bin/spark-submit \
+    --master local[*] \
+    /jobs/processamento/bronze/postgres/leituras.py \
+    --execution_date 2026-06-05 \
+    --environment hmg \
+    --owner pedro \
+    --jdbc_url "jdbc:postgresql://postgres:5432/erp_database" \
+    --jdbc_user postgres \
+    --jdbc_password 123
+
+
+--- 9. Metadados de Leitura ---
+Carga incremental de erp_legado.metadados_leitura via JOIN com leituras.
+
+docker exec \
+  -e MINIO_ROOT_USER=1234 \
+  -e MINIO_ROOT_PASSWORD=12345678 \
+  -e PYTHONPATH=/jobs \
+  spark-master \
+  /opt/spark/bin/spark-submit \
+    --master local[*] \
+    /jobs/processamento/bronze/postgres/metadados_leitura.py \
+    --execution_date 2026-06-18 \
+    --environment hmg \
+    --owner pedro \
+    --jdbc_url "jdbc:postgresql://postgres:5432/erp_database" \
+    --jdbc_user postgres \
+    --jdbc_password 123
+
+
+========================================
+ VERIFICAR RESULTADO NO MINIO
+========================================
+Acesse http://localhost:9001 (usuário: 1234, senha: 12345678)
+e confira o bucket bronze-hmg com a estrutura:
+
+  bronze-hmg/
+  ├── mongo/
+  │   └── equipamentos/          <- Delta table
+  └── postgres/
+      ├── tipos_equipamento/
+      ├── tipos_medicao/
+      ├── status_qualidade/
+      ├── fabricas/
+      ├── equipamentos/
+      ├── sensores/
+      ├── leituras/
+      └── metadados_leitura/
+
+
+========================================
+ REBUILD DA IMAGEM (se o Dockerfile mudou)
+========================================
+cd infra/docker
+docker compose build spark-master spark-worker
+docker compose --env-file ../../.env up -d spark-master spark-worker

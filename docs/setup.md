@@ -1,4 +1,4 @@
-## Setup — Instalação e Execução
+## Setup - Instalação e Execução
 
 Guia completo para subir o ambiente do projeto do zero.
 
@@ -32,6 +32,12 @@ Copie o template e preencha com suas credenciais:
 
 ```bash
 cp .env.template .env
+```
+
+Gere o `FERNET_KEY` obrigatório para o Airflow (funciona no Linux, Mac e Windows):
+
+```bash
+python -c "import base64, os; print(base64.urlsafe_b64encode(os.urandom(32)).decode())"
 ```
 
 Edite `.env` com seus valores:
@@ -95,6 +101,7 @@ Esse script automaticamente:
 2. ✅ Lê credenciais do `.env`
 3. ✅ Provisiona buckets no MinIO via Terraform (`bronze`, `silver`, `gold`)
 4. ✅ Sobe Kafka + Schema Registry
+5. ✅ Inicializa e sobe o Airflow (api-server, scheduler, worker)
 
 ---
 
@@ -103,13 +110,14 @@ Esse script automaticamente:
 Para entender melhor cada componente:
 
 * Storage: [infra/docker/README.md](../infra/docker/README.md)
+* Spark Dockerfile: [docs/spark-dockerfile.md](spark-dockerfile.md)
 * Terraform (automático): [infra/terraform/README.md](../infra/terraform/README.md)
 * Streaming: [docs/streaming.md](streaming.md)
 
 Após alguns segundos, verifique o status com:
 
 ```bash
-docker compose ps
+docker compose -f infra/kafka/docker-compose.yml ps
 ```
 
 ---
@@ -135,7 +143,7 @@ cd src && poetry run python -m streaming.consumer.bronze_consumer
 # Sem Poetry
 cd src && python -m streaming.consumer.bronze_consumer
 
-# Modo dry-run (recomendado para testes — não grava no MinIO)
+# Modo dry-run (recomendado para testes - não grava no MinIO)
 cd src && python -m streaming.consumer.bronze_consumer --dry-run
 ```
 
@@ -145,10 +153,13 @@ cd src && python -m streaming.consumer.bronze_consumer --dry-run
 
 | Interface | URL | O que verificar |
 |---|---|---|
-| Kafka UI | http://localhost:8080 | Topics → iot-sensors-raw → Messages |
+| Airflow | http://localhost:8080 | DAGs -> estado das execuções (airflow/airflow) |
+| Kafka UI | http://localhost:8088 | Topics -> iot-sensors-raw -> Messages |
 | Schema Registry | http://localhost:8081/subjects | Schema registrado |
-| MinIO Console | http://localhost:9001 | Bucket `bronze` → pastas `factory_id=...` |
+| MinIO Console | http://localhost:9001 | Buckets `bronze`, `silver`, `gold` |
+| Spark Master UI | http://localhost:8085 | Workers registrados e jobs |
 | Mongo Express | http://localhost:8083 | Coleção `equipments` (requer infra/docker stack) |
+| Grafana | http://localhost:3001 | Logs centralizados (admin/admin) |
 
 ---
 
@@ -178,10 +189,10 @@ Na raiz do projeto:
 
 ```bash
 # Remove containers e volumes (dados do Kafka são descartados)
-docker compose down -v
+docker compose -f infra/kafka/docker-compose.yml down -v
 
 # Se quiser manter os dados do Kafka para a próxima sessão, omita o -v:
-docker compose down
+docker compose -f infra/kafka/docker-compose.yml down
 ```
 
 ### 9c. Derrubar a stack de storage (MongoDB, PostgreSQL, MinIO)
@@ -210,7 +221,8 @@ cd ../..
 
 | O que derrubar | Comando |
 |---|---|
-| Só streaming | `docker compose down -v` |
+| Só streaming (Kafka) | `docker compose -f infra/kafka/docker-compose.yml down -v` |
 | Só storage | `docker compose -f infra/docker/docker-compose.yml --env-file .env down -v` |
-| Tudo | Os dois comandos acima, nessa ordem |
+| Só Airflow | `docker compose -f infra/airflow/docker-compose.yaml --env-file .env down -v` |
+| Tudo (recomendado) | `./scripts/stop-all.sh` |
 | Buckets MinIO (Terraform) | `cd infra/terraform && terraform destroy -auto-approve` |

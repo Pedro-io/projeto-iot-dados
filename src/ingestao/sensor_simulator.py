@@ -4,7 +4,7 @@ import random
 import time
 import uuid
 from datetime import datetime, timezone
-from typing import Dict, Any, List
+from typing import Any, Dict, List
 
 try:
     from kafka import KafkaProducer
@@ -177,7 +177,7 @@ class KafkaSensorProducer:
         """Envia um evento para Kafka."""
         key = event.get("equipment_id")  # Particionar por equipamento
         try:
-            future = self.producer.send(self.topic, key=key, value=event)
+            self.producer.send(self.topic, key=key, value=event)
             # Não esperar confirmação para cada mensagem (async)
         except KafkaError as e:
             print(f"❌ Erro ao enviar: {e}")
@@ -315,7 +315,7 @@ def main():
         
         # Estatísticas finais
         elapsed = time.time() - start_time
-        print(f"\n📈 Resumo:")
+        print("\n📈 Resumo:")
         print(f"   - Total de eventos: {total_events:,}")
         print(f"   - Total de anomalias: {total_anomalies:,}")
         print(f"   - Tempo total: {elapsed:.1f}s")

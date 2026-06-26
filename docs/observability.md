@@ -1,4 +1,4 @@
-# Observabilidade — Logs com Grafana + Loki + Promtail
+# Observabilidade - Logs com Grafana + Loki + Promtail
 
 Stack de observabilidade baseada em logs dos containers Docker.
 
@@ -7,7 +7,7 @@ Stack de observabilidade baseada em logs dos containers Docker.
 ## Arquitetura
 
 ```
-Containers Docker → Promtail → Loki → Grafana
+Containers Docker -> Promtail -> Loki -> Grafana
    (stdout/stderr)   (coleta)  (armazena) (visualiza)
 ```
 
@@ -34,7 +34,7 @@ Acesse: `http://localhost:3001`
 
 ## Consultando logs (LogQL)
 
-No Grafana, vá em **Explore** → selecione datasource **Loki**.
+No Grafana, vá em **Explore** -> selecione datasource **Loki**.
 
 **Ver todos os logs dos containers:**
 ```logql
@@ -69,7 +69,7 @@ observability/
 └── promtail-config.yml        # Coleta logs de /var/lib/docker/containers/
 ```
 
-O datasource Loki é provisionado automaticamente via arquivo — não é necessário configurá-lo manualmente na UI.
+O datasource Loki é provisionado automaticamente via arquivo - não é necessário configurá-lo manualmente na UI.
 
 ---
 

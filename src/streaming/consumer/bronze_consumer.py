@@ -1,4 +1,4 @@
-"""Consumer Bronze — entrypoint executável.
+"""Consumer Bronze - entrypoint executável.
 
 Uso:
     python -m streaming.consumer.bronze_consumer [opções]
@@ -15,6 +15,7 @@ import signal
 import sys
 from datetime import datetime
 from typing import Any
+
 try:
     from dotenv import load_dotenv
     load_dotenv()  
@@ -33,13 +34,19 @@ except ImportError:
     print("Erro: boto3 não instalado. Execute: pip install boto3")
     sys.exit(1)
 
-from streaming.config import (
-    DEFAULT_BOOTSTRAP_SERVERS, DEFAULT_TOPIC, DEFAULT_GROUP_ID,
-    DEFAULT_MINIO_ENDPOINT, DEFAULT_MINIO_ROOT_USER, DEFAULT_MINIO_ROOT_PASSWORD,
-    DEFAULT_BUCKET, DEFAULT_FLUSH_SIZE, DEFAULT_FLUSH_INTERVAL,
-    DEFAULT_SCHEMA_REGISTRY_URL,
-)
 from streaming.buffer.partitioned_buffer import PartitionedBuffer
+from streaming.config import (
+    DEFAULT_BOOTSTRAP_SERVERS,
+    DEFAULT_BUCKET,
+    DEFAULT_FLUSH_INTERVAL,
+    DEFAULT_FLUSH_SIZE,
+    DEFAULT_GROUP_ID,
+    DEFAULT_MINIO_ENDPOINT,
+    DEFAULT_MINIO_ROOT_PASSWORD,
+    DEFAULT_MINIO_ROOT_USER,
+    DEFAULT_SCHEMA_REGISTRY_URL,
+    DEFAULT_TOPIC,
+)
 from streaming.consumer.base_consumer import BaseConsumer
 from streaming.logging.json_formatter import setup_logging
 from streaming.process.bronze_process import BronzeProcessor
@@ -55,7 +62,7 @@ log = setup_logging("bronze_consumer")
 class BronzeConsumer(BaseConsumer):
     """
     Consome 'iot-sensors-raw' e persiste eventos brutos na camada Bronze
-    com particionamento Hive-style. Commit manual de offset → at-least-once.
+    com particionamento Hive-style. Commit manual de offset -> at-least-once.
     """
 
     def _build_object_key(self, partition_path: str) -> str:
@@ -119,7 +126,7 @@ def _build_kafka_consumer(bootstrap_servers: str, topic: str, group_id: str) -> 
 
 def _build_storage(args: argparse.Namespace) -> StorageClient:
     if args.dry_run:
-        log.info("Modo dry-run ativado — nada será gravado no MinIO")
+        log.info("Modo dry-run ativado - nada será gravado no MinIO")
         return DryRunClient()
     return MinIOClient(
         endpoint   = args.minio_endpoint,
@@ -131,7 +138,7 @@ def _build_storage(args: argparse.Namespace) -> StorageClient:
 
 def _parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(
-        description="Consumer Kafka → Bronze (MinIO) com Schema Registry.",
+        description="Consumer Kafka -> Bronze (MinIO) com Schema Registry.",
         formatter_class=argparse.ArgumentDefaultsHelpFormatter,
     )
     parser.add_argument("--bootstrap-servers",   default=DEFAULT_BOOTSTRAP_SERVERS)
@@ -165,7 +172,7 @@ def main() -> None:
     args = _parse_args()
     log.setLevel(getattr(logging, args.log_level.upper()))
 
-    log.info("Iniciando Consumer Kafka → Bronze", extra={
+    log.info("Iniciando Consumer Kafka -> Bronze", extra={
         "topic":               args.topic,
         "group_id":            args.group_id,
         "bootstrap_servers":   args.bootstrap_servers,
@@ -199,7 +206,7 @@ def main() -> None:
 
     # Graceful shutdown em SIGTERM (Docker stop, k8s rolling update, etc.)
     def _handle_sigterm(signum, frame):
-        log.info("SIGTERM recebido — encerrando graciosamente")
+        log.info("SIGTERM recebido - encerrando graciosamente")
         raise KeyboardInterrupt
     signal.signal(signal.SIGTERM, _handle_sigterm)
 

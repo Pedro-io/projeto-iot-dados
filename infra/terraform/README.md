@@ -40,7 +40,7 @@ Execute a partir da **raiz do projeto**:
 
 As credenciais são **lidas automaticamente do `.env` pelos scripts**.
 
-O arquivo `terraform.tfvars` contém valores padrão apenas para referência — é **override** pelos scripts via `-var`.
+O arquivo `terraform.tfvars` contém valores padrão apenas para referência - é **override** pelos scripts via `-var`.
 
 **Variáveis obrigatórias no `.env`:**
 

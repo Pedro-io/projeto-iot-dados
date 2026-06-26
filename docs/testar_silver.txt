@@ -1,0 +1,249 @@
+========================================
+ TESTES - ETLs Camada Silver
+========================================
+
+PRÉ-REQUISITOS
+--------------
+1. Stack Docker rodando:
+   cd infra/docker && docker compose --env-file ../../.env up -d
+
+2. Bronze populada - rode os ETLs da bronze primeiro (docs/testar_bronze.txt).
+   A silver lê os Parquet/NDJSON do bucket bronze; sem bronze não há dados.
+
+3. Para o teste de sensor_events (Kafka), o consumer bronze deve ter gravado
+   NDJSON no bucket bronze com a data de execução usada abaixo.
+
+4. Verificar worker registrado:
+   http://localhost:8085  (Spark Master UI)
+
+
+VARIÁVEIS DE REFERÊNCIA (não são comandos, só para leitura)
+-----------------------------------------------------------
+EXEC_DATE = 2026-06-19
+ENV       = prd
+OWNER     = pedro
+
+
+FORMATO DOS COMANDOS
+--------------------
+Todos usam --master local[*] (modo desenvolvimento).
+Não há parâmetros de conexão: a silver lê direto do bucket bronze via S3A.
+
+
+========================================
+ MONGODB
+========================================
+
+--- 1. Equipamentos (MongoDB -> Silver) ---
+Lê bronze/mongo/equipamentos, aplica tipagem e dedup por equipamento_id.
+Grava Delta em silver/mongo/equipamentos.
+
+docker exec \
+  -e MINIO_ROOT_USER=1234 \
+  -e MINIO_ROOT_PASSWORD=12345678 \
+  -e PYTHONPATH=/jobs \
+  spark-master \
+  /opt/spark/bin/spark-submit \
+    --master local[*] \
+    /jobs/processamento/silver/mongo/equipamentos.py \
+    --execution_date 2026-06-19 \
+    --environment prd \
+    --owner pedro
+
+
+========================================
+ POSTGRESQL - TABELAS DE DOMÍNIO
+========================================
+
+--- 2. Tipos de Equipamento ---
+Lê bronze/postgres/tipos_equipamento, dedup por id, garante unicidade de nome.
+
+docker exec \
+  -e MINIO_ROOT_USER=1234 \
+  -e MINIO_ROOT_PASSWORD=12345678 \
+  -e PYTHONPATH=/jobs \
+  spark-master \
+  /opt/spark/bin/spark-submit \
+    --master local[*] \
+    /jobs/processamento/silver/postgres/tipos_equipamento.py \
+    --execution_date 2026-06-19 \
+    --environment prd \
+    --owner pedro
+
+
+--- 3. Tipos de Medição ---
+Lê bronze/postgres/tipos_medicao, casta ranges para DoubleType.
+Filtra registros onde valor_minimo >= valor_maximo (inconsistência de origem).
+
+docker exec \
+  -e MINIO_ROOT_USER=1234 \
+  -e MINIO_ROOT_PASSWORD=12345678 \
+  -e PYTHONPATH=/jobs \
+  spark-master \
+  /opt/spark/bin/spark-submit \
+    --master local[*] \
+    /jobs/processamento/silver/postgres/tipos_medicao.py \
+    --execution_date 2026-06-19 \
+    --environment prd \
+    --owner pedro
+
+
+--- 4. Status de Qualidade ---
+Lê bronze/postgres/status_qualidade, dedup por id.
+
+docker exec \
+  -e MINIO_ROOT_USER=1234 \
+  -e MINIO_ROOT_PASSWORD=12345678 \
+  -e PYTHONPATH=/jobs \
+  spark-master \
+  /opt/spark/bin/spark-submit \
+    --master local[*] \
+    /jobs/processamento/silver/postgres/status_qualidade.py \
+    --execution_date 2026-06-19 \
+    --environment prd \
+    --owner pedro
+
+
+========================================
+ POSTGRESQL - TABELAS MESTRE
+========================================
+
+--- 5. Fábricas ---
+Lê bronze/postgres/fabricas, casta latitude/longitude para DoubleType.
+
+docker exec \
+  -e MINIO_ROOT_USER=1234 \
+  -e MINIO_ROOT_PASSWORD=12345678 \
+  -e PYTHONPATH=/jobs \
+  spark-master \
+  /opt/spark/bin/spark-submit \
+    --master local[*] \
+    /jobs/processamento/silver/postgres/fabricas.py \
+    --execution_date 2026-06-19 \
+    --environment prd \
+    --owner pedro
+
+
+--- 6. Equipamentos (PostgreSQL) ---
+Lê bronze/postgres/equipamentos, valida status em [ativo, inativo, manutencao].
+
+docker exec \
+  -e MINIO_ROOT_USER=1234 \
+  -e MINIO_ROOT_PASSWORD=12345678 \
+  -e PYTHONPATH=/jobs \
+  spark-master \
+  /opt/spark/bin/spark-submit \
+    --master local[*] \
+    /jobs/processamento/silver/postgres/equipamentos.py \
+    --execution_date 2026-06-19 \
+    --environment prd \
+    --owner pedro
+
+
+--- 7. Sensores ---
+Lê bronze/postgres/sensores, valida status em [ativo, inativo, manutencao].
+
+docker exec \
+  -e MINIO_ROOT_USER=1234 \
+  -e MINIO_ROOT_PASSWORD=12345678 \
+  -e PYTHONPATH=/jobs \
+  spark-master \
+  /opt/spark/bin/spark-submit \
+    --master local[*] \
+    /jobs/processamento/silver/postgres/sensores.py \
+    --execution_date 2026-06-19 \
+    --environment prd \
+    --owner pedro
+
+
+========================================
+ POSTGRESQL - TABELAS TRANSACIONAIS
+========================================
+
+--- 8. Leituras ---
+Lê a partição _execution_date=2026-06-19 de bronze/postgres/leituras.
+Casta valor para DoubleType, timestamp_leitura para TimestampType, dedup por id.
+
+docker exec \
+  -e MINIO_ROOT_USER=1234 \
+  -e MINIO_ROOT_PASSWORD=12345678 \
+  -e PYTHONPATH=/jobs \
+  spark-master \
+  /opt/spark/bin/spark-submit \
+    --master local[*] \
+    /jobs/processamento/silver/postgres/leituras.py \
+    --execution_date 2026-06-19 \
+    --environment prd \
+    --owner pedro
+
+
+--- 9. Metadados de Leitura ---
+Lê a partição _execution_date=2026-06-19 de bronze/postgres/metadados_leitura.
+Casta nivel_bateria e forca_sinal_dbm para IntegerType, dedup por leitura_id.
+
+docker exec \
+  -e MINIO_ROOT_USER=1234 \
+  -e MINIO_ROOT_PASSWORD=12345678 \
+  -e PYTHONPATH=/jobs \
+  spark-master \
+  /opt/spark/bin/spark-submit \
+    --master local[*] \
+    /jobs/processamento/silver/postgres/metadados_leitura.py \
+    --execution_date 2026-06-19 \
+    --environment prd \
+    --owner pedro
+
+
+========================================
+ KAFKA (STREAMING)
+========================================
+
+--- 10. Sensor Events ---
+Lê NDJSON de bronze/factory_id=*/measurement_type=*/dt=2026-06-19/*.
+Achata metadata (firmware/bateria), remove campos Kafka (_kafka_*), dedup por event_id.
+Particiona a silver por measurement_type e _execution_date.
+
+PRÉ-REQUISITO: consumer bronze deve ter gerado arquivos com dt=2026-06-19.
+Confira em http://localhost:9001 se existem arquivos em bronze/factory_id=*/
+
+docker exec \
+  -e MINIO_ROOT_USER=1234 \
+  -e MINIO_ROOT_PASSWORD=12345678 \
+  -e PYTHONPATH=/jobs \
+  spark-master \
+  /opt/spark/bin/spark-submit \
+    --master local[*] \
+    /jobs/processamento/silver/kafka/sensor_events.py \
+    --execution_date 2026-06-19 \
+    --environment prd \
+    --owner pedro
+
+
+========================================
+ VERIFICAR RESULTADO NO MINIO
+========================================
+Acesse http://localhost:9001 (usuário: 1234, senha: 12345678)
+e confira o bucket silver com a estrutura:
+
+  silver/
+  ├── mongo/
+  │   └── equipamentos/          <- Delta table (_delta_log/ + parquet)
+  ├── postgres/
+  │   ├── tipos_equipamento/
+  │   ├── tipos_medicao/
+  │   ├── status_qualidade/
+  │   ├── fabricas/
+  │   ├── equipamentos/
+  │   ├── sensores/
+  │   ├── leituras/              <- particionado por _execution_date
+  │   └── metadados_leitura/     <- particionado por _execution_date
+  └── kafka/
+      └── sensor_events/         <- particionado por measurement_type e _execution_date
+
+
+========================================
+ REBUILD DA IMAGEM (se o Dockerfile mudou)
+========================================
+cd infra/docker
+docker compose build spark-master spark-worker
+docker compose --env-file ../../.env up -d spark-master spark-worker
