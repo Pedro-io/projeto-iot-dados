@@ -24,5 +24,14 @@ build/
 .idea/
 *.swp
 
-#Airflow
+# --- Airflow ---
+# Logs de execução
 infra/airflow/logs/
+*.log
+
+# Arquivos de configuração local
+infra/airflow/config/airflow.cfg
+infra/airflow/config/webserver_config.py
+
+# Banco de dados SQLite local
+airflow.db
