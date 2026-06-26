@@ -1,6 +1,6 @@
 # Catálogo de Dados - Plataforma IoT Lakehouse
 
-**Última atualização:** 2026-06-19  
+**Última atualização:** 2026-06-26  
 **Owner:** pedro.rodrigues@bdtech.ai  
 **Ambiente de referência:** `prd` (buckets `bronze`, `silver`, `gold`)
 

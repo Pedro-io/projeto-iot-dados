@@ -153,11 +153,13 @@ cd src && python -m streaming.consumer.bronze_consumer --dry-run
 
 | Interface | URL | O que verificar |
 |---|---|---|
+| Airflow | http://localhost:8080 | DAGs -> estado das execuções (airflow/airflow) |
 | Kafka UI | http://localhost:8088 | Topics -> iot-sensors-raw -> Messages |
 | Schema Registry | http://localhost:8081/subjects | Schema registrado |
-| MinIO Console | http://localhost:9001 | Bucket `bronze` -> pastas `factory_id=...` |
+| MinIO Console | http://localhost:9001 | Buckets `bronze`, `silver`, `gold` |
+| Spark Master UI | http://localhost:8085 | Workers registrados e jobs |
 | Mongo Express | http://localhost:8083 | Coleção `equipments` (requer infra/docker stack) |
-| Airflow | http://localhost:8080 | DAGs -> estado das execuções |
+| Grafana | http://localhost:3001 | Logs centralizados (admin/admin) |
 
 ---
 
